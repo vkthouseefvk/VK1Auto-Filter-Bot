@@ -142,20 +142,6 @@ async def update_verify_status(user_id, verify_token="", is_verified=False, link
     temp.VERIFICATIONS[user_id] = current
     await db.update_verify_status(user_id, current)
 
-async def get_premium_status(user_id):
-    premium = temp.PREMIUM.get(user_id)
-    if not premium:
-        premium = await update_premium_status(user_id)
-        temp.PREMIUM[user_id] = verify
-    return premium
-
-async def update_premium_status(user_id, trial_used=False, is_premium=False, expire_time=0):
-    current = await get_premium_status(user_id)
-    current['trial_used'] = trial_used
-    current['is_premium'] = is_premium
-    current['expire_time'] = expire_time
-    temp.PREMIUM[user_id] = current
-    await db.update_premium_status(user_id, current)
     
 async def broadcast_messages(user_id, message, pin):
     try:

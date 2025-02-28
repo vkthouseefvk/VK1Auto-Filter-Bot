@@ -65,10 +65,6 @@
 • /index - to index bot accessible channels.
 • /set_fsub - to set force subscribe channel.
 • /remove_fsub - to remove force subscribe channel.
-• /add_premium - add user as premium user
-• /remove_premium - remove premium user
-• /plan - view premium plans
-• /myplan - view my premium plans
 ```
 
 ## Variables

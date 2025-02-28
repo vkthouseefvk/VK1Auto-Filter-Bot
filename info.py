@@ -111,18 +111,6 @@ IMDB = is_enabled('IMDB', True)
 SPELL_CHECK = is_enabled("SPELL_CHECK", True)
 SHORTLINK = is_enabled('SHORTLINK', False)
 
-#premium info
-IS_PREMIUM = is_enabled('IS_PREMIUM', True)
-PAYMENT_QR = environ.get('PAYMENT_QR', '')
-if len(PAYMENT_QR) == 0:
-    print('Info - PAYMENT_QR is empty')
-OWNER_UPI_ID = environ.get('OWNER_UPI_ID', '')  #if you not have UPI, then use another method
-if len(OWNER_UPI_ID) == 0:
-    print('Info - OWNER_UPI_ID is empty')
-if len(PAYMENT_QR) == 0 or len(OWNER_UPI_ID) == 0:
-    print('Info - IS_PREMIUM is automatically disabled due to empty of PAYMENT_QR or OWNER_UPI_ID')
-    IS_PREMIUM = False
-
 # for stream
 IS_STREAM = is_enabled('IS_STREAM', True)
 BIN_CHANNEL = environ.get("BIN_CHANNEL", "")

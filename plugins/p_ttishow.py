@@ -237,20 +237,4 @@ async def list_chats(bot, message):
         await raju.delete()
         os.remove('chats.txt')
 
-@Client.on_message(filters.command('prm_users') & filters.user(ADMINS))
-async def list_prm_users(bot, message):
-    raju = await message.reply('Getting list of premium users')
-    users = await db.get_all_premium_users()
-    out = "premium Users saved in database are:\n\n"
-    async for user in users:
-        if user['expiry_time']:
-            out += f"**ID:** `{user['id']}`\n**expiry time:** `{user['expiry_time'].strftime('%Y-%m-%d %H:%M')}`"
-            out += '\n\n'
-    try:
-        await raju.edit_text(out)
-    except MessageTooLong:
-        with open('prm_users.txt', 'w+') as outfile:
-            outfile.write(out)
-        await message.reply_document('prm_users.txt', caption="List of premium users")
-        await raju.delete()
-        os.remove('prm_users.txt')
+

@@ -16,7 +16,6 @@ class script(object):
     STATUS_TXT = """🗂 Total Files: <code>{}</code>
 👤 Total Users: <code>{}</code>
 👥 Total Chats: <code>{}</code>
-🤑 Premium Users: <code>{}</code>
 ✨ Used Storage: <code>{}</code>
 🗳 Free Storage: <code>{}</code>
 🚀 Bot Uptime: <code>{}</code>"""
@@ -107,9 +106,7 @@ I can't find the <b>{}</b> in my database! 🥲
 /prm_users - to get all premium users details
 /chats - to get all groups
 /invite_link - to generate invite link
-/index - to index bot accessible channels
-/add_premium - add user as premium user
-/remove_premium - remove premium user</b>"""
+/index - to index bot accessible channels</b>"""
     
     USER_COMMAND_TXT = """<b>Here is bot user commands 👇
 
@@ -123,9 +120,7 @@ I can't find the <b>{}</b> in my database! 🥲
 /set_tutorial - to set custom tutorial link in result page button
 /id - to check group or channel id
 /set_fsub - to set force subscribe channels
-/remove_fsub - to remove all force subscribe channel
-/plan - view premium plans
-/myplan - view my premium plans</b>"""
+/remove_fsub - to remove all force subscribe channel</b>"""
     
     SOURCE_TXT = """<b>ʙᴏᴛ ɢɪᴛʜᴜʙ ʀᴇᴘᴏsɪᴛᴏʀʏ -
 
@@ -134,34 +129,4 @@ I can't find the <b>{}</b> in my database! 🥲
 - ꜱᴏᴜʀᴄᴇ - <a href=https://github.com/HA-Bots/Auto-Filter-Bot>ʜᴇʀᴇ</a>
 
 - ᴅᴇᴠʟᴏᴘᴇʀ - @HA_Bots"""
-
-    PREMIUM_PLAN_TEXT = """<b><i><u>- ᴀᴠᴀɪʟᴀʙʟᴇ ᴘʟᴀɴs - </u>
-
-- 30ʀs - 1 ᴡᴇᴇᴋ
-- 50ʀs - 1 ᴍᴏɴᴛʜs
-- 120ʀs - 3 ᴍᴏɴᴛʜs
-- 220ʀs - 6 ᴍᴏɴᴛʜs
-
-<u>🎁 ᴘʀᴇᴍɪᴜᴍ ғᴇᴀᴛᴜʀᴇs 🎁</u>
-
-○ ɴᴏ ɴᴇᴇᴅ ᴛᴏ ᴠᴇʀɪғʏ
-○ ɴᴏ ɴᴇᴇᴅ ᴛᴏ ᴏᴘᴇɴ ᴀᴅ ʟɪɴᴋ
-○ ᴅɪʀᴇᴄᴛ ғɪʟᴇs   
-○ ᴀᴅ-ғʀᴇᴇ ᴇxᴘᴇʀɪᴇɴᴄᴇ 
-○ ʜɪɢʜ-sᴘᴇᴇᴅ ᴅᴏᴡɴʟᴏᴀᴅ ᴀɴᴅ ᴡᴀᴛᴄʜ ʟɪɴᴋ                            
-○ ᴜɴʟɪᴍɪᴛᴇᴅ ᴍᴏᴠɪᴇs & sᴇʀɪᴇs                                                                         
-○ ꜰᴜʟʟ ᴀᴅᴍɪɴ sᴜᴘᴘᴏʀᴛ            
-○ ʟᴀɴɢᴜᴀɢᴇ sᴇᴀʀᴄʜ 
-○ ǫᴜᴀʟɪᴛʏ sᴇᴀʀᴄʜ 
-○ sᴇɴᴅ ᴀʟʟ ғɪʟᴇs ʙʏ ᴏɴᴇ ᴄʟɪᴄᴋ
-○ ʀᴇǫᴜᴇsᴛ ᴡɪʟʟ ʙᴇ ᴄᴏᴍᴘʟᴇᴛᴇᴅ ɪɴ 1ʜ ɪꜰ ᴀᴠᴀɪʟᴀʙʟᴇ   
-
-✨ ᴜᴘɪ ɪᴅ - <code>{}</code>
-
-ᴄʟɪᴄᴋ ᴛᴏ ᴄʜᴇᴄᴋ ʏᴏᴜʀ ᴀᴄᴛɪᴠᴇ ᴘʟᴀɴ /myplan
-
-💢 ᴍᴜsᴛ sᴇɴᴅ sᴄʀᴇᴇɴsʜᴏᴛ ᴀғᴛᴇʀ ᴘᴀʏᴍᴇɴᴛ
-
-‼️ ᴀғᴛᴇʀ sᴇɴᴅɪɴɢ ᴀ sᴄʀᴇᴇɴsʜᴏᴛ ᴘʟᴇᴀsᴇ ɢɪᴠᴇ ᴜs sᴏᴍᴇ ᴛɪᴍᴇ ᴛᴏ ᴀᴅᴅ ʏᴏᴜ ɪɴ ᴛʜᴇ ᴘʀᴇᴍɪᴜᴍ ʟɪsᴛ</i></b>"""
-
 

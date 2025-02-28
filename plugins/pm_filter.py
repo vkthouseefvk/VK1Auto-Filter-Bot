@@ -28,18 +28,6 @@ async def pm_search(client, message):
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def group_search(client, message):
-    try:
-        client_id = (await client.get_me()).id
-        vp = await client.get_chat_member(message.chat.id, client_id)
-        if vp.status not in [enums.ChatMemberStatus.OWNER, enums.ChatMemberStatus.ADMINISTRATOR]:
-            return
-    except:
-        return
-    if not await db.get_chat(message.chat.id):
-        total = int(message.chat.members_count)
-        username = f'@{message.chat.username}' if message.chat.username else vp.invite_link
-        await client.send_message(LOG_CHANNEL, script.NEW_GROUP_TXT.format(message.chat.title, message.chat.id, username, total))       
-        await db.add_chat(message.chat.id, message.chat.title)
     chat_id = message.chat.id
     settings = await get_settings(chat_id)
     user_id = message.from_user.id if message and message.from_user else 0

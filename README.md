@@ -134,15 +134,16 @@ Use these commands:
 * [![Hansaka](https://img.shields.io/static/v1?label=Hansaka&message=TG&color=critical)](https://t.me/Hansaka_Anuhas)
 
 ## Thanks To
- - [Pyrogram](https://github.com/pyrogram/pyrogram) and [PyroFork](https://github.com/Mayuri-Chan/pyrofork) For Telegram MTProto API Framework
- - [Contributors](https://github.com/HA-Bots/Auto-Filter-Bot/graphs/contributors) For free helps
- - And to everyone who helped
+* [Pyrogram](https://github.com/pyrogram/pyrogram) and [PyroFork](https://github.com/Mayuri-Chan/pyrofork) For Telegram MTProto API Framework
+* [Contributors](https://github.com/HA-Bots/Auto-Filter-Bot/graphs/contributors) For free helps
+* And to everyone who helped
 
 ## Note
- - Importing this repo instead of forking is strictly prohibited, Kindly fork and edit as your wish. Must Give Credits for [developer(s)](https://t.me/HA_Bots)
- - If you find any bugs or errors, [report](https://t.me/HA_Bots_Support) it
+* Importing this repo instead of forking is strictly prohibited, Kindly fork and edit as your wish. Must Give Credits for [developer(s)](https://t.me/HA_Bots)
+* If you find any bugs or errors, [report](https://t.me/HA_Bots_Support) it
 
 ## Disclaimer
 [![GNU General Public License v3.0](https://www.gnu.org/graphics/gplv3-with-text-136x68.png)](https://www.gnu.org/licenses/agpl-3.0.en.html#header)  
-Licensed under [GNU AGPL v3.0](https://github.com/HA-Bots/Auto-Filter-Bot/blob/main/LICENSE)
+
+* Licensed under [GNU AGPL v3.0](https://github.com/HA-Bots/Auto-Filter-Bot/blob/main/LICENSE)
 Selling The Codes To Other People For Money Is *Strictly Prohibited*.

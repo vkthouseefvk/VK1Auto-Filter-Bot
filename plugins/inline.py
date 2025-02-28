@@ -1,8 +1,8 @@
 from pyrogram import Client, emoji
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultCachedDocument, InlineQuery
 from database.ia_filterdb import get_search_results
-from utils import get_size, temp
-from info import CACHE_TIME, SUPPORT_LINK, UPDATES_LINK, FILE_CAPTION
+from utils import get_size, temp, get_verify_status
+from info import CACHE_TIME, SUPPORT_LINK, UPDATES_LINK, FILE_CAPTION, IS_VERIFY
 
 cache_time = CACHE_TIME
 
@@ -13,6 +13,14 @@ def is_banned(query: InlineQuery):
 async def inline_search(bot, query):
     """Show search results for given inline query"""
 
+    verify_status = await get_verify_status(query.from_user.id)
+    if IS_VERIFY and not verify_status['is_verified']:
+        await query.answer(results=[],
+                           cache_time=0,
+                           switch_pm_text="You're not verified today :(",
+                           switch_pm_parameter="inline_verify")
+        return
+    
     if is_banned(query):
         await query.answer(results=[],
                            cache_time=0,

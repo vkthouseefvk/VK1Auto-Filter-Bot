@@ -39,8 +39,8 @@ class Bot(Client):
         try:
             await super().start()
         except FloodWait as e:
-            time = get_readable_time(e.value)
-            print(f"Warning - Flood Wait Occured, Wait For: {time}")
+            time_ = get_readable_time(e.value)
+            print(f"Warning - Flood Wait Occured, Wait For: {time_}")
             asyncio.sleep(e.value)
             print("Info - Now Ready For Deploying !")
         temp.START_TIME = time.time()

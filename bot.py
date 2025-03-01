@@ -1,7 +1,6 @@
 import os
 import time
 import asyncio
-import uvloop
 
 # pyrogram imports
 from pyrogram import types
@@ -22,8 +21,6 @@ from database.users_chats_db import db
 from database.ia_filterdb import Media
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-
-uvloop.install()
 
 class Bot(Client):
     def __init__(self):

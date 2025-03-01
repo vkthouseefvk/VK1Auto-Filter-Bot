@@ -152,7 +152,7 @@ async def start(client, message):
                 chat_id=message.from_user.id,
                 file_id=file.file_id,
                 caption=f_caption,
-                protect_content=False if await db.has_premium_access(message.from_user.id) else True,
+                protect_content=False,
                 reply_markup=InlineKeyboardMarkup(btn)
             )
             file_ids.append(msg.id)
@@ -210,7 +210,7 @@ async def start(client, message):
         chat_id=message.from_user.id,
         file_id=file_id,
         caption=f_caption,
-        protect_content=False if await db.has_premium_access(message.from_user.id) else True,
+        protect_content=False,
         reply_markup=InlineKeyboardMarkup(btn)
     )
     time = get_readable_time(PM_FILE_DELETE_TIME)

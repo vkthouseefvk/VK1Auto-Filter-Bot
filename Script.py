@@ -103,7 +103,6 @@ I can't find the <b>{}</b> in my database! 🥲
 /ban_user - to ban a users from bot
 /unban_user - to unban a users from bot
 /users - to get all users details
-/prm_users - to get all premium users details
 /chats - to get all groups
 /invite_link - to generate invite link
 /index - to index bot accessible channels</b>"""

@@ -449,6 +449,7 @@ async def advantage_spoll_choker(bot, query):
         await auto_filter(bot, query, s, k)
     else:
         k = await query.message.edit(f"👋 Hello {query.from_user.mention},\n\nI don't find <b>'{search}'</b> in my database. 😔")
+        await bot.send_message(LOG_CHANNEL, f"#No_Result\n\nRequester: {query.from_user.mention}\nContent: {search}")
         await asyncio.sleep(60)
         await k.delete()
         try:
@@ -1007,6 +1008,7 @@ async def advantage_spell_chok(message, s):
         return
     if not movies:
         n = await s.edit_text(text=script.NOT_FILE_TXT.format(message.from_user.mention, search), reply_markup=InlineKeyboardMarkup(btn))
+        await temp.BOT.send_message(LOG_CHANNEL, f"#No_Result\n\nRequester: {message.from_user.mention}\nContent: {search}")
         await asyncio.sleep(60)
         await n.delete()
         try:

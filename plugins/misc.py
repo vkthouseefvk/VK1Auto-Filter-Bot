@@ -1,5 +1,5 @@
 from info import ADMINS
-from speedtest import Speedtest, ConfigRetrievalError
+from speedtest import Speedtest, ConfigRetrievalError, SpeedtestBestServerFailure
 from pyrogram import Client, filters, enums
 from utils import get_size
 from datetime import datetime
@@ -27,10 +27,10 @@ async def speedtest(client, message):
     msg = await message.reply_text("Initiating Speedtest...")
     try:
         speed = Speedtest()
-    except ConfigRetrievalError:
+        speed.get_best_server()
+    except (ConfigRetrievalError, SpeedtestBestServerFailure):
         await msg.edit("Can't connect to Server at the Moment, Try Again Later !")
         return
-    speed.get_best_server()
     speed.download()
     speed.upload()
     speed.results.share()

@@ -104,9 +104,9 @@ async def get_search_results(query, max_results=MAX_BTN, offset=0, lang=None):
         regex = query
 
     if USE_CAPTION_FILTER:
-         {'$or': [{'file_name': regex}, {'caption': regex}]}
+        filter = {'$or': [{'file_name': regex}, {'caption': regex}]}
     else:
-        filter = {'file_name': regex, }
+        filter = {'file_name': regex}
 
     cursor = Media.find(filter)
     results = [doc async for doc in cursor]

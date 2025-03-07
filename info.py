@@ -1,5 +1,6 @@
 import re
 from os import environ
+import os
 from Script import script
 import pytz
 
@@ -34,8 +35,8 @@ if len(BOT_TOKEN) == 0:
     exit()
 PORT = int(environ.get('PORT', '80'))
 
-# Bot pics
-PICS = (environ.get('PICS', 'https://telegra.ph/file/58fef5cb458d5b29b0186.jpg https://telegra.ph/file/f0aa4f433132769f8970c.jpg https://telegra.ph/file/f515fbc2084592eca60a5.jpg https://telegra.ph/file/20dbdcffaa89bd3d09a74.jpg https://telegra.ph/file/6045ba953af4def846238.jpg')).split()
+# Add your images to "imgs" folder in this repo (https://github.com/HA-Bots/Auto-Filter-Bot/tree/main/imgs)
+PICS = [os.path.join('imgs', file) for file in os.listdir('imgs')]
 
 # Bot Admins
 ADMINS = environ.get('ADMINS', '')

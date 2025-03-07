@@ -78,7 +78,6 @@
 * `AUTH_CHANNEL`: ID of force subscribe channels (Multiple channels can be used separated by space)
 * `INDEX_CHANNELS`: Username or ID of your files channels (Multiple channels can be used separated by space)
 * `LANGUAGES`: Language of your bot search (Multiple languages can be used separated by space)
-* `PICS`: Telegraph links of images to show in start message. (Multiple images can be used separated by space)
 * Check [info.py](https://github.com/HA-Bots/Auto-Filter-Bot/blob/main/info.py) for more optional variables
 
 

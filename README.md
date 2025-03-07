@@ -88,41 +88,66 @@
 
 ## Deploy
 <details><summary>Deploy To Heroku</summary>
-<br>
-• Connect repo to heroku app
-<br>
-<br>
-• Then click deploy button
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://www.heroku.com/deploy)
+
 </details>
 
 <details><summary>Deploy To Koyeb</summary>
-<br>
-Use these commands:
-<br>
-<br>
-• Build Command: <code>pip3 install -U -r requirements.txt</code>
-<br>
-<br>
-• Start Command: <code>python3 bot.py</code>
+
+[![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=git&builder=dockerfile&repository=https://github.com/HA-Bots/Auto-Filter-Bot)
+
 </details>
 
 <details><summary>Deploy To Render</summary>
-<br>
-Use these commands:
-<br>
-<br>
-• Build Command: <code>pip3 install -U -r requirements.txt</code>
-<br>
-<br>
-• Start Command: <code>python3 bot.py</code>
-</details>
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
 
 <details><summary>Deploy To VPS</summary>
-<br>
-• Build the Docker Image: <code>sudo docker build -t auto-filter-bot .</code>
-<br>
-<br>
-• Run the Docker Container as Web App: <code>sudo docker run -d -p 80:80 --name Auto-Filter-Bot auto-filter-bot</code>
+
+1. Run the following command to ensure your system is up to date:
+```
+sudo apt update && sudo apt upgrade -y
+```
+2. If Docker is not already installed, install it using:
+```
+sudo apt install docker.io -y
+```
+3. Verify the installation:
+```
+docker --version
+```
+4. Ensure Docker starts on boot and is running:
+```
+sudo systemctl enable docker
+sudo systemctl start docker
+```
+5. Clone this repository (also you can upload manually repo to your VPS):
+```
+git clone https://github.com/HA-Bots/Auto-Filter-Bot
+cd Auto-Filter-Bot
+```
+6. Navigate to your bot directory and build the Docker image:
+```
+sudo docker build -t auto-filter-bot .
+```
+7. Once the image is built, start the container:
+```
+sudo docker run -d -p 80:80 --name Auto-Filter-Bot auto-filter-bot
+```
+8. Verify that the bot is running:
+```
+sudo docker ps
+```
+9. If the bot crashes or needs to restart:
+```
+sudo docker restart Auto-Filter-Bot
+```
+10. If something is not working, check logs:
+```
+sudo docker logs Auto-Filter-Bot
+```
+
 </details>
 
 ## Support

@@ -1,10 +1,14 @@
 from motor.motor_asyncio import AsyncIOMotorClient
-from info import TIME_ZONE, ADMINS, DATABASE_NAME, DATABASE_URL, FORCE_SUB_CHANNELS, IMDB_TEMPLATE, WELCOME_TEXT, LINK_MODE, TUTORIAL, SHORTLINK_URL, SHORTLINK_API, SHORTLINK, FILE_CAPTION, IMDB, WELCOME, SPELL_CHECK, PROTECT_CONTENT, AUTO_FILTER, AUTO_DELETE, IS_STREAM, VERIFY_EXPIRE
+from info import TIME_ZONE, ADMINS, DATABASE_NAME, DATABASE_URL, SECOND_DATABASE_URL, FORCE_SUB_CHANNELS, IMDB_TEMPLATE, WELCOME_TEXT, LINK_MODE, TUTORIAL, SHORTLINK_URL, SHORTLINK_API, SHORTLINK, FILE_CAPTION, IMDB, WELCOME, SPELL_CHECK, PROTECT_CONTENT, AUTO_FILTER, AUTO_DELETE, IS_STREAM, VERIFY_EXPIRE
 import time
 import datetime
 
 client = AsyncIOMotorClient(DATABASE_URL)
 mydb = client[DATABASE_NAME]
+
+if SECOND_DATABASE_URL:
+     second_client = AsyncIOMotorClient(SECOND_DATABASE_URL)
+     second_db = second_client[DATABASE_NAME]
 
 class Database:
     default_setgs = {
@@ -171,6 +175,9 @@ class Database:
     async def get_db_size(self):
         return (await mydb.command("dbstats"))['dataSize']
    
+    async def get_second_db_size(self):
+        return (await second_db.command("dbstats"))['dataSize']
+    
     async def get_all_chats_count(self):
         grp = await self.grp.count_documents({})
         return grp

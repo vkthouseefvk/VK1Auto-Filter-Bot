@@ -23,6 +23,7 @@ class Media(Document):
     class Meta:
         indexes = ('$file_name', )
         collection_name = COLLECTION_NAME
+        strict = False
 
 
 
@@ -43,6 +44,7 @@ if SECOND_DATABASE_URL:
         class Meta:
              indexes = ('$file_name', )
              collection_name = COLLECTION_NAME
+             strict = False
 
 
 

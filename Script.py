@@ -13,14 +13,16 @@ class script(object):
 ★ Username: @HA_Bots
 ★ Country: Sri Lanka 🇱🇰"""
 
-    STATUS_TXT = """🗂 Total Files: <code>{}</code>
-👤 Total Users: <code>{}</code>
+    STATUS_TXT = """👤 Total Users: <code>{}</code>
 👥 Total Chats: <code>{}</code>
-✨ Used Storage: <code>{}</code>
-🗳 Free Storage: <code>{}</code>
+🗳 Data database used: <code>{}</code>
 
-✨ Second DB Used Storage: <code>{}</code>
-🗳 Second DB Free Storage: <code>{}</code>
+🗂 1st database Files: <code>{}</code>
+🗳 1st files database used: <code>{}</code>
+
+🗂 2nd database Files: <code>{}</code>
+🗳 2nd files database used: <code>{}</code>
+
 🚀 Bot Uptime: <code>{}</code>"""
 
     NEW_GROUP_TXT = """#NewGroup

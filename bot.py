@@ -17,7 +17,7 @@ from hydrogram.errors import FloodWait
 from aiohttp import web
 from typing import Union, Optional, AsyncGenerator
 from web import web_app
-from info import LOG_CHANNEL, API_ID, API_HASH, BOT_TOKEN, PORT, BIN_CHANNEL, ADMINS, SECOND_DATABASE_URL, DATABASE_URL
+from info import LOG_CHANNEL, API_ID, DATA_DATABASE_URL, API_HASH, BOT_TOKEN, PORT, BIN_CHANNEL, ADMINS, SECOND_FILES_DATABASE_URL, FILES_DATABASE_URL
 from utils import temp, get_readable_time
 from database.users_chats_db import db
 from database.ia_filterdb import Media
@@ -45,23 +45,30 @@ class Bot(Client):
             asyncio.sleep(e.value)
             logger.info("Now Ready For Deploying !")
         temp.START_TIME = time.time()
+        data_db = MongoClient(DATA_DATABASE_URL, server_api=ServerApi('1'))
+        try:
+            data_db.admin.command('ping')
+            logger.info("Successfully connected to DATA_DATABASE_URL")
+        except Exception as e:
+            logger.error("Make sure DATA_DATABASE_URL is correct, exiting now")
+            exit()
         b_users, b_chats = await db.get_banned()
         temp.BANNED_USERS = b_users
         temp.BANNED_CHATS = b_chats
-        client = MongoClient(DATABASE_URL, server_api=ServerApi('1'))
+        files_db = MongoClient(FILES_DATABASE_URL, server_api=ServerApi('1'))
         try:
-            client.admin.command('ping')
-            logger.info("Successfully connected to DATABASE_URL")
+            files_db.admin.command('ping')
+            logger.info("Successfully connected to FILES_DATABASE_URL")
         except Exception as e:
-            logger.error("Make sure DATABASE_URL is correct, exiting now")
+            logger.error("Make sure FILES_DATABASE_URL is correct, exiting now")
             exit()
-        if SECOND_DATABASE_URL:
-            client2 = MongoClient(SECOND_DATABASE_URL, server_api=ServerApi('1'))
+        if SECOND_FILES_DATABASE_URL:
+            secnd_files_db = MongoClient(SECOND_FILES_DATABASE_URL, server_api=ServerApi('1'))
             try:
-                client2.admin.command('ping')
-                logger.info("Successfully connected to SECOND_DATABASE_URL")
+                secnd_files_db.admin.command('ping')
+                logger.info("Successfully connected to SECOND_FILES_DATABASE_URL")
             except:
-                logger.error("Make sure SECOND_DATABASE_URL is correct, exiting now")
+                logger.error("Make sure SECOND_FILES_DATABASE_URL is correct, exiting now")
                 exit()
 
         if os.path.exists('restart.txt'):

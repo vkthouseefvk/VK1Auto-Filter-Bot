@@ -1,14 +1,17 @@
 from motor.motor_asyncio import AsyncIOMotorClient
-from info import TIME_ZONE, ADMINS, DATABASE_NAME, DATABASE_URL, SECOND_DATABASE_URL, FORCE_SUB_CHANNELS, IMDB_TEMPLATE, WELCOME_TEXT, LINK_MODE, TUTORIAL, SHORTLINK_URL, SHORTLINK_API, SHORTLINK, FILE_CAPTION, IMDB, WELCOME, SPELL_CHECK, PROTECT_CONTENT, AUTO_FILTER, AUTO_DELETE, IS_STREAM, VERIFY_EXPIRE
+from info import TIME_ZONE, ADMINS, DATABASE_NAME, DATA_DATABASE_URL, FILES_DATABASE_URL, SECOND_FILES_DATABASE_URL, FORCE_SUB_CHANNELS, IMDB_TEMPLATE, WELCOME_TEXT, LINK_MODE, TUTORIAL, SHORTLINK_URL, SHORTLINK_API, SHORTLINK, FILE_CAPTION, IMDB, WELCOME, SPELL_CHECK, PROTECT_CONTENT, AUTO_FILTER, AUTO_DELETE, IS_STREAM, VERIFY_EXPIRE
 import time
 import datetime
 
-client = AsyncIOMotorClient(DATABASE_URL)
-mydb = client[DATABASE_NAME]
+files_db_client = AsyncIOMotorClient(FILES_DATABASE_URL)
+files_db = files_db_client[DATABASE_NAME]
 
-if SECOND_DATABASE_URL:
-     second_client = AsyncIOMotorClient(SECOND_DATABASE_URL)
-     second_db = second_client[DATABASE_NAME]
+data_db_client = AsyncIOMotorClient(DATA_DATABASE_URL)
+data_db = data_db_client[DATABASE_NAME]
+
+if SECOND_FILES_DATABASE_URL:
+     second_files_db_client = AsyncIOMotorClient(SECOND_FILES_DATABASE_URL)
+     second_files_db = second_files_db_client[DATABASE_NAME]
 
 class Database:
     default_setgs = {
@@ -39,9 +42,9 @@ class Database:
     }
     
     def __init__(self):
-        self.col = mydb.Users
-        self.grp = mydb.Groups
-        self.prm_users = mydb.Premium_Users
+        self.col = data_db.Users
+        self.grp = data_db.Groups
+        self.prm_users = data_db.Premium_Users
 
     def new_user(self, id, name):
         return dict(
@@ -172,11 +175,14 @@ class Database:
     async def get_all_chats(self):
         return self.grp.find({})
     
-    async def get_db_size(self):
-        return (await mydb.command("dbstats"))['dataSize']
+    async def get_files_db_size(self):
+        return (await files_db.command("dbstats"))['dataSize']
    
-    async def get_second_db_size(self):
-        return (await second_db.command("dbstats"))['dataSize']
+    async def get_second_files_db_size(self):
+        return (await second_files_db.command("dbstats"))['dataSize']
+    
+    async def get_data_db_size(self):
+        return (await data_db.command("dbstats"))['dataSize']
     
     async def get_all_chats_count(self):
         grp = await self.grp.count_documents({})

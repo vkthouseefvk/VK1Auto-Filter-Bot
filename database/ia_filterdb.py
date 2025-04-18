@@ -7,11 +7,11 @@ from pymongo.errors import DuplicateKeyError, OperationFailure
 from umongo import Instance, Document, fields
 from motor.motor_asyncio import AsyncIOMotorClient
 from marshmallow.exceptions import ValidationError
-from info import USE_CAPTION_FILTER, DATABASE_URL, SECOND_DATABASE_URL, DATABASE_NAME, COLLECTION_NAME, MAX_BTN
+from info import USE_CAPTION_FILTER, FILES_DATABASE_URL, SECOND_FILES_DATABASE_URL, DATABASE_NAME, COLLECTION_NAME, MAX_BTN
 
 logger = logging.getLogger(__name__)
 
-client = AsyncIOMotorClient(DATABASE_URL)
+client = AsyncIOMotorClient(FILES_DATABASE_URL)
 db = client[DATABASE_NAME]
 instance = Instance.from_db(db)
 
@@ -30,8 +30,8 @@ class Media(Document):
 
 
 #second db
-if SECOND_DATABASE_URL:
-    second_client = AsyncIOMotorClient(SECOND_DATABASE_URL)
+if SECOND_FILES_DATABASE_URL:
+    second_client = AsyncIOMotorClient(SECOND_FILES_DATABASE_URL)
     second_db = second_client[DATABASE_NAME]
     second_instance = Instance.from_db(second_db)
 
@@ -75,7 +75,7 @@ async def save_file(media):
             logger.warning(f'Already Saved - {file_name}')
             return 'dup'
         except OperationFailure: #if 1st db is full
-            if SECOND_DATABASE_URL:
+            if SECOND_FILES_DATABASE_URL:
                 file = SecondMedia(
                     file_id=file_id,
                     file_name=file_name,
@@ -115,7 +115,7 @@ async def get_search_results(query, max_results=MAX_BTN, offset=0, lang=None):
     cursor = Media.find(filter)
     results = [doc async for doc in cursor]
 
-    if SECOND_DATABASE_URL:
+    if SECOND_FILES_DATABASE_URL:
         cursor2 = SecondMedia.find(filter)
         results.extend([doc async for doc in cursor2])
 
@@ -153,14 +153,22 @@ async def delete_files(query):
     except:
         regex = query
     filter = {'file_name': regex}
-    total = await Media.count_documents(filter)
-    files = Media.find(filter)
-    return total, files
+    cursor = Media.find(filter)
+    results = [doc async for doc in cursor]
+    if SECOND_FILES_DATABASE_URL:
+        cursor2 = SecondMedia.find(filter)
+        results.extend([doc async for doc in cursor2])
+    total = len(results)
+    return total, results
 
 async def get_file_details(query):
     filter = {'file_id': query}
     cursor = Media.find(filter)
     filedetails = await cursor.to_list(length=1)
+    if not filedetails:
+        cursor2 = SecondMedia.find(filter)
+        filedetails = await cursor2.to_list(length=1)
+        return filedetails
     return filedetails
 
 def encode_file_id(s: bytes) -> str:

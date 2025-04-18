@@ -1,5 +1,5 @@
-Pyrofork
-tgcrypto-pyrofork
+hydrogram
+tgcrypto
 motor
 marshmallow
 umongo

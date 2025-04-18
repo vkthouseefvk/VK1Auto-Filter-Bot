@@ -2,12 +2,14 @@ import logging
 from struct import pack
 import re
 import base64
-from pyrogram.file_id import FileId
+from hydrogram.file_id import FileId
 from pymongo.errors import DuplicateKeyError, OperationFailure 
 from umongo import Instance, Document, fields
 from motor.motor_asyncio import AsyncIOMotorClient
 from marshmallow.exceptions import ValidationError
 from info import USE_CAPTION_FILTER, DATABASE_URL, SECOND_DATABASE_URL, DATABASE_NAME, COLLECTION_NAME, MAX_BTN
+
+logger = logging.getLogger(__name__)
 
 client = AsyncIOMotorClient(DATABASE_URL)
 db = client[DATABASE_NAME]
@@ -64,13 +66,13 @@ async def save_file(media):
             caption=file_caption
         )
     except ValidationError:
-        print(f'Saving Error - {file_name}')
+        logger.error(f'Saving Error - {file_name}')
         return 'err'
     else:
         try:
             await file.commit()
         except DuplicateKeyError:      
-            print(f'Already Saved - {file_name}')
+            logger.warning(f'Already Saved - {file_name}')
             return 'dup'
         except OperationFailure: #if 1st db is full
             if SECOND_DATABASE_URL:
@@ -82,13 +84,13 @@ async def save_file(media):
                     )
                 try:
                     await file.commit()
-                    print(f'Saved to 2nd db - {file_name}')
+                    logger.info(f'Saved to 2nd db - {file_name}')
                     return 'suc'
                 except DuplicateKeyError:
-                    print(f'Already Saved in 2nd db - {file_name}')
+                    logger.warning(f'Already Saved in 2nd db - {file_name}')
                     return 'dup'
         else:
-            print(f'Saved - {file_name}')
+            logger.info(f'Saved - {file_name}')
             return 'suc'
 
 async def get_search_results(query, max_results=MAX_BTN, offset=0, lang=None):

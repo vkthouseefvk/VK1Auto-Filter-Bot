@@ -3,6 +3,9 @@ from os import environ
 import os
 from Script import script
 import pytz
+import logging
+
+logger = logging.getLogger(__name__)
 
 def is_enabled(type, value):
     data = environ.get(type, str(value))
@@ -11,7 +14,7 @@ def is_enabled(type, value):
     elif data.lower() in ["false", "no", "0", "disable", "n"]:
         return False
     else:
-        print(f'Error - {type} is invalid, exiting now')
+        logger.error(f'{type} is invalid, exiting now')
         exit()
 
 def is_valid_ip(ip):
@@ -21,17 +24,17 @@ def is_valid_ip(ip):
 # Bot information
 API_ID = environ.get('API_ID', '')
 if len(API_ID) == 0:
-    print('Error - API_ID is missing, exiting now')
+    logger.error('API_ID is missing, exiting now')
     exit()
 else:
     API_ID = int(API_ID)
 API_HASH = environ.get('API_HASH', '')
 if len(API_HASH) == 0:
-    print('Error - API_HASH is missing, exiting now')
+    logger.error('API_HASH is missing, exiting now')
     exit()
 BOT_TOKEN = environ.get('BOT_TOKEN', '')
 if len(BOT_TOKEN) == 0:
-    print('Error - BOT_TOKEN is missing, exiting now')
+    logger.error('BOT_TOKEN is missing, exiting now')
     exit()
 PORT = int(environ.get('PORT', '80'))
 
@@ -41,7 +44,7 @@ PICS = [os.path.join('imgs', file) for file in os.listdir('imgs')]
 # Bot Admins
 ADMINS = environ.get('ADMINS', '')
 if len(ADMINS) == 0:
-    print('Error - ADMINS is missing, exiting now')
+    logger.error('ADMINS is missing, exiting now')
     exit()
 else:
     ADMINS = [int(admins) for admins in ADMINS.split()]
@@ -49,21 +52,21 @@ else:
 # Channels
 INDEX_CHANNELS = [int(index_channels) if index_channels.startswith("-") else index_channels for index_channels in environ.get('INDEX_CHANNELS', '').split()]
 if len(INDEX_CHANNELS) == 0:
-    print('Info - INDEX_CHANNELS is empty')
+    logger.info('INDEX_CHANNELS is empty')
 LOG_CHANNEL = environ.get('LOG_CHANNEL', '')
 if len(LOG_CHANNEL) == 0:
-    print('Error - LOG_CHANNEL is missing, exiting now')
+    logger.error('LOG_CHANNEL is missing, exiting now')
     exit()
 else:
     LOG_CHANNEL = int(LOG_CHANNEL)
 FORCE_SUB_CHANNELS = [int(fsub_channels) if fsub_channels.startswith("-") else fsub_channels for fsub_channels in environ.get('FORCE_SUB_CHANNELS', '').split()]
 if len(FORCE_SUB_CHANNELS) == 0:
-    print('Info - FORCE_SUB_CHANNELS is empty')
+    logger.info('FORCE_SUB_CHANNELS is empty')
     
 # support group
 SUPPORT_GROUP = environ.get('SUPPORT_GROUP', '')
 if len(SUPPORT_GROUP) == 0:
-    print('Error - SUPPORT_GROUP is missing, exiting now')
+    logger.error('SUPPORT_GROUP is missing, exiting now')
     exit()
 else:
     SUPPORT_GROUP = int(SUPPORT_GROUP)
@@ -71,11 +74,11 @@ else:
 # MongoDB information
 DATABASE_URL = environ.get('DATABASE_URL', "")
 if len(DATABASE_URL) == 0:
-    print('Error - DATABASE_URL is missing, exiting now')
+    logger.error('DATABASE_URL is missing, exiting now')
     exit()
 SECOND_DATABASE_URL = environ.get('SECOND_DATABASE_URL', "")
 if len(SECOND_DATABASE_URL) == 0:
-    print('Info - SECOND_DATABASE_URL is empty')
+    logger.info('SECOND_DATABASE_URL is empty')
 DATABASE_NAME = environ.get('DATABASE_NAME', "Cluster0")
 COLLECTION_NAME = environ.get('COLLECTION_NAME', 'Files')
 
@@ -119,13 +122,13 @@ SHORTLINK = is_enabled('SHORTLINK', False)
 IS_STREAM = is_enabled('IS_STREAM', True)
 BIN_CHANNEL = environ.get("BIN_CHANNEL", "")
 if len(BIN_CHANNEL) == 0:
-    print('Error - BIN_CHANNEL is missing, exiting now')
+    logger.error('BIN_CHANNEL is missing, exiting now')
     exit()
 else:
     BIN_CHANNEL = int(BIN_CHANNEL)
 URL = environ.get("URL", "")
 if len(URL) == 0:
-    print('Error - URL is missing, exiting now')
+    logger.error('URL is missing, exiting now')
     exit()
 else:
     if URL.startswith(('https://', 'http://')):
@@ -134,7 +137,7 @@ else:
     elif is_valid_ip(URL):
         URL = f'http://{URL}/'
     else:
-        print('Error - URL is not valid, exiting now')
+        logger.error('URL is not valid, exiting now')
         exit()
 
 #start command reactions and sticker

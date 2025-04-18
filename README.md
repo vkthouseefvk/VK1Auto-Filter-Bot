@@ -26,7 +26,6 @@
 - [x] 𝑆𝑝𝑒𝑙𝑙𝑖𝑛𝑔 𝐶ℎ𝑒𝑐𝑘 𝐹𝑒𝑎𝑡𝑢𝑟𝑒
 - [x] 𝐴𝑢𝑡𝑜 𝐷𝑒𝑙𝑒𝑡𝑒
 - [x] 𝐴𝑛𝑑 𝑀𝑜𝑟𝑒...
-- [x] Demo Bot - <a href=https://t.me/HA_Auto_Filter_Test_Bot>Here</a>
 
 ## 𝐶𝑜𝑚𝑚𝑎𝑛𝑑𝑠
 ```
@@ -156,7 +155,7 @@ sudo docker logs Auto-Filter-Bot
 * [![Hansaka](https://img.shields.io/static/v1?label=Hansaka&message=TG&color=critical)](https://t.me/Hansaka_Anuhas)
 
 ## Thanks To
-* [Pyrogram](https://github.com/pyrogram/pyrogram) and [PyroFork](https://github.com/Mayuri-Chan/pyrofork) For Telegram MTProto API Framework
+* [Hydrogram](https://github.com/hydrogram/hydrogram) For Telegram MTProto API Framework
 * [Contributors](https://github.com/HA-Bots/Auto-Filter-Bot/graphs/contributors) For free helps
 * And to everyone who helped
 

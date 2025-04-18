@@ -1,5 +1,5 @@
-from pyrogram import Client, emoji
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultCachedDocument, InlineQuery
+from hydrogram import Client
+from hydrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultCachedDocument, InlineQuery
 from database.ia_filterdb import get_search_results
 from utils import get_size, temp, get_verify_status
 from info import CACHE_TIME, SUPPORT_LINK, UPDATES_LINK, FILE_CAPTION, IS_VERIFY
@@ -50,7 +50,7 @@ async def inline_search(bot, query):
                 reply_markup=reply_markup))
 
     if results:
-        switch_pm_text = f"{emoji.FILE_FOLDER} Results - {total}"
+        switch_pm_text = f"Results - {total}"
         if string:
             switch_pm_text += f' For: {string}'
         await query.answer(results=results,
@@ -60,7 +60,7 @@ async def inline_search(bot, query):
                         switch_pm_parameter="start",
                         next_offset=str(next_offset))
     else:
-        switch_pm_text = f'{emoji.CROSS_MARK} No Results'
+        switch_pm_text = f'No Results'
         if string:
             switch_pm_text += f' For: {string}'
         await query.answer(results=[],

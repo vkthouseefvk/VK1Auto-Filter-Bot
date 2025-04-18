@@ -1,9 +1,9 @@
-from pyrogram.errors import UserNotParticipant, FloodWait
+from hydrogram.errors import UserNotParticipant, FloodWait
 from info import LONG_IMDB_DESCRIPTION, TIME_ZONE
 from imdb import Cinemagoer
 import asyncio
-from pyrogram.types import InlineKeyboardButton
-from pyrogram import enums
+from hydrogram.types import InlineKeyboardButton
+from hydrogram import enums
 import pytz
 import re
 from datetime import datetime

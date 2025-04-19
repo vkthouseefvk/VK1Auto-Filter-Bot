@@ -17,7 +17,7 @@ from hydrogram.errors import FloodWait
 from aiohttp import web
 from typing import Union, Optional, AsyncGenerator
 from web import web_app
-from info import LOG_CHANNEL, API_ID, DATA_DATABASE_URL, API_HASH, BOT_TOKEN, PORT, BIN_CHANNEL, ADMINS, SECOND_FILES_DATABASE_URL, FILES_DATABASE_URL
+from info import SUPPORT_GROUP, LOG_CHANNEL, API_ID, DATA_DATABASE_URL, API_HASH, BOT_TOKEN, PORT, BIN_CHANNEL, ADMINS, SECOND_FILES_DATABASE_URL, FILES_DATABASE_URL
 from utils import temp, get_readable_time
 from database.users_chats_db import db
 from database.ia_filterdb import Media
@@ -96,10 +96,14 @@ class Bot(Client):
             logger.error("Make sure bot admin in LOG_CHANNEL, exiting now")
             exit()
         try:
-            m = await self.send_message(chat_id=BIN_CHANNEL, text="Test")
-            await m.delete()
+            await self.get_chat(BIN_CHANNEL)
         except:
             logger.error("Make sure bot admin in BIN_CHANNEL, exiting now")
+            exit()
+        try:
+            await self.get_chat(SUPPORT_GROUP)
+        except:
+            logger.error("Make sure bot admin in SUPPORT_GROUP, exiting now")
             exit()
         for admin in ADMINS:
             try:

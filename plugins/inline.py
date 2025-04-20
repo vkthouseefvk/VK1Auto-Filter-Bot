@@ -55,7 +55,7 @@ async def inline_search(bot, query):
                 title=file['file_name'],
                 document_file_id=file['_id'],
                 caption=f_caption,
-                description=f'Size: {get_size(file['file_size'])}',
+                description=f'Size: {get_size(file["file_size"])}',
                 reply_markup=reply_markup))
 
     if results:

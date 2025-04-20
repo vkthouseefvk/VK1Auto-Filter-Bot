@@ -205,7 +205,7 @@ async def list_users(bot, message):
     raju = await message.reply('Getting list of users')
     users = await db.get_all_users()
     out = "Users saved in database are:\n\n"
-    async for user in users:
+    for user in users:
         out += f"**Name:** {user['name']}\n**ID:** `{user['id']}`"
         if user['ban_status']['is_banned']:
             out += ' (Banned User)'
@@ -226,7 +226,7 @@ async def list_chats(bot, message):
     raju = await message.reply('Getting list of chats')
     chats = await db.get_all_chats()
     out = "Chats saved in database are:\n\n"
-    async for chat in chats:
+    for chat in chats:
         out += f"**Title:** {chat['title']}\n**ID:** `{chat['id']}`"
         if chat['chat_status']['is_disabled']:
             out += ' (Disabled Chat)'

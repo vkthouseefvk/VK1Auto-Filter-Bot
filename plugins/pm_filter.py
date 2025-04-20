@@ -10,7 +10,7 @@ from hydrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Callback
 from hydrogram import Client, filters, enums
 from utils import get_size, is_subscribed, is_check_admin, get_wish, get_shortlink, get_readable_time, get_poster, temp, get_settings, save_group_settings
 from database.users_chats_db import db
-from database.ia_filterdb import Media, get_search_results,delete_files, SecondMedia
+from database.ia_filterdb import get_search_results,delete_files, db_count_documents, second_db_count_documents
 
 BUTTONS = {}
 CAP = {}
@@ -126,10 +126,10 @@ async def next_page(bot, query):
     if settings['links']:
         btn = []
         for file_num, file in enumerate(files, start=offset+1):
-            files_link += f"""<b>\n\n{file_num}. <a href=https://t.me/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] {file.file_name}</a></b>"""
+            files_link += f"""<b>\n\n{file_num}. <a href=https://t.me/{temp.U_NAME}?start=file_{query.message.chat.id}_{file['_id']}>[{get_size(file['file_size'])}] {file['file_name']}</a></b>"""
     else:
         btn = [[
-            InlineKeyboardButton(text=f"📂 {get_size(file.file_size)} {file.file_name}", callback_data=f'file#{file.file_id}')
+            InlineKeyboardButton(text=f"{get_size(file['file_size'])} - {file['file_name']}", callback_data=f"file#{file['_id']}")
         ]
             for file in files
         ]
@@ -226,10 +226,10 @@ async def filter_languages_cb_handler(client: Client, query: CallbackQuery):
     if settings['links']:
         btn = []
         for file_num, file in enumerate(files, start=1):
-            files_link += f"""<b>\n\n{file_num}. <a href=https://t.me/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] {file.file_name}</a></b>"""
+            files_link += f"""<b>\n\n{file_num}. <a href=https://t.me/{temp.U_NAME}?start=file_{query.message.chat.id}_{file['_id']}>[{get_size(file['file_size'])}] {file['file_name']}</a></b>"""
     else:
         btn = [[
-            InlineKeyboardButton(text=f"📂 {get_size(file.file_size)} {file.file_name}", callback_data=f'file#{file.file_id}')
+            InlineKeyboardButton(text=f"{get_size(file['file_size'])} - {file['file_name']}", callback_data=f"file#{file['_id']}")
         ]
             for file in files
         ]
@@ -280,10 +280,10 @@ async def lang_next_page(bot, query):
     if settings['links']:
         btn = []
         for file_num, file in enumerate(files, start=l_offset+1):
-            files_link += f"""<b>\n\n{file_num}. <a href=https://t.me/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] {file.file_name}</a></b>"""
+            files_link += f"""<b>\n\n{file_num}. <a href=https://t.me/{temp.U_NAME}?start=file_{query.message.chat.id}_{file['_id']}>[{get_size(file['file_size'])}] {file['file_name']}</a></b>"""
     else:
         btn = [[
-            InlineKeyboardButton(text=f"✨ {get_size(file.file_size)} ⚡️ {file.file_name}", callback_data=f'file#{file.file_id}')
+            InlineKeyboardButton(text=f"{get_size(file['file_size'])} - {file['file_name']}", callback_data=f'file#{file["_id"]}')
         ]
             for file in files
         ]
@@ -343,10 +343,10 @@ async def quality_search(client: Client, query: CallbackQuery):
     if settings['links']:
         btn = []
         for file_num, file in enumerate(files, start=1):
-            files_link += f"""<b>\n\n{file_num}. <a href=https://t.me/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] {file.file_name}</a></b>"""
+            files_link += f"""<b>\n\n{file_num}. <a href=https://t.me/{temp.U_NAME}?start=file_{query.message.chat.id}_{file['_id']}>[{get_size(file['file_size'])}] {file['file_name']}</a></b>"""
     else:
         btn = [[
-            InlineKeyboardButton(text=f"📂 {get_size(file.file_size)} {file.file_name}", callback_data=f'file#{file.file_id}')
+            InlineKeyboardButton(text=f"{get_size(file['file_size'])} - {file['file_name']}", callback_data=f'file#{file["_id"]}')
         ]
             for file in files
         ]
@@ -394,10 +394,10 @@ async def quality_next_page(bot, query):
     if settings['links']:
         btn = []
         for file_num, file in enumerate(files, start=l_offset+1):
-            files_link += f"""<b>\n\n{file_num}. <a href=https://t.me/{temp.U_NAME}?start=file_{query.message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] {file.file_name}</a></b>"""
+            files_link += f"""<b>\n\n{file_num}. <a href=https://t.me/{temp.U_NAME}?start=file_{query.message.chat.id}_{file['_id']}>[{get_size(file['file_size'])}] {file['file_name']}</a></b>"""
     else:
         btn = [[
-            InlineKeyboardButton(text=f"✨ {get_size(file.file_size)} ⚡️ {file.file_name}", callback_data=f'file#{file.file_id}')
+            InlineKeyboardButton(text=f"{get_size(file['file_size'])} - {file['file_name']}", callback_data=f'file#{file["_id"]}')
         ]
             for file in files
         ]
@@ -569,8 +569,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
     elif query.data == "stats":
         if query.from_user.id not in ADMINS:
             return await query.answer("ADMINS Only!", show_alert=True)
-        files = await Media.count_documents()
-        secnd_files = await SecondMedia.count_documents()
+        files = db_count_documents()
         users = await db.total_users_count()
         chats = await db.total_chat_count()
         used_files_db_size = get_size(await db.get_files_db_size())
@@ -578,8 +577,10 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
         if SECOND_FILES_DATABASE_URL:
             secnd_files_db_used_size = get_size(await db.get_second_files_db_size())
+            secnd_files = second_db_count_documents()
         else:
             secnd_files_db_used_size = '-'
+            secnd_files = '-'
         uptime = get_readable_time(time_now() - temp.START_TIME)
         buttons = [[
             InlineKeyboardButton('« ʙᴀᴄᴋ', callback_data='about')
@@ -722,20 +723,11 @@ async def cb_handler(client: Client, query: CallbackQuery):
         else:
             await query.message.edit_text("Something went wrong!")
             
-    elif query.data == "delete_all":
-        files = await Media.count_documents()
-        await query.answer('Deleting...')
-        await Media.collection.drop()
-        await query.message.edit_text(f"Successfully deleted {files} files")
-        
+
     elif query.data.startswith("delete"):
         _, query_ = query.data.split("_", 1)
-        deleted = 0
         await query.message.edit('Deleting...')
-        total, files = await delete_files(query_)
-        async for file in files:
-            await Media.collection.delete_one({'_id': file.file_id})
-            deleted += 1
+        deleted = await delete_files(query_)
         await query.message.edit(f'Deleted {deleted} files in your database in your query {query_}')
      
     elif query.data.startswith("send_all"):
@@ -857,10 +849,10 @@ async def auto_filter(client, msg, s, spoll=False):
     if settings['links']:
         btn = []
         for file_num, file in enumerate(files, start=1):
-            files_link += f"""<b>\n\n{file_num}. <a href=https://t.me/{temp.U_NAME}?start=file_{message.chat.id}_{file.file_id}>[{get_size(file.file_size)}] {file.file_name}</a></b>"""
+            files_link += f"""<b>\n\n{file_num}. <a href=https://t.me/{temp.U_NAME}?start=file_{message.chat.id}_{file['_id']}>[{get_size(file['file_size'])}] {file['file_name']}</a></b>"""
     else:
         btn = [[
-            InlineKeyboardButton(text=f"📂 {get_size(file.file_size)} {file.file_name}", callback_data=f'file#{file.file_id}')
+            InlineKeyboardButton(text=f"{get_size(file['file_size'])} - {file['file_name']}", callback_data=f'file#{file["_id"]}')
         ]
             for file in files
         ]   
@@ -894,7 +886,7 @@ async def auto_filter(client, msg, s, spoll=False):
             btn.insert(0,
                 [InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", callback_data=f"send_all#{key}#{req}")]
             )
-    imdb = await get_poster(search, file=(files[0]).file_name) if settings["imdb"] else None
+    imdb = await get_poster(search, file=(files[0])['file_name']) if settings["imdb"] else None
     TEMPLATE = settings['template']
     if imdb:
         cap = TEMPLATE.format(

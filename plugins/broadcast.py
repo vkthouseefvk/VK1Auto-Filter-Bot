@@ -36,7 +36,7 @@ async def users_broadcast(bot, message):
     success = 0
 
     async with lock:
-        async for user in users:
+        for user in users:
             time_taken = get_readable_time(time.time()-start_time)
             if temp.USERS_CANCEL:
                 temp.USERS_CANCEL = False
@@ -74,7 +74,7 @@ async def groups_broadcast(bot, message):
     success = 0
 
     async with lock:
-        async for chat in chats:
+        for chat in chats:
             time_taken = get_readable_time(time.time()-start_time)
             if temp.GROUPS_CANCEL:
                 temp.GROUPS_CANCEL = False

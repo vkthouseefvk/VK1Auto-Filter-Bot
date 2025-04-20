@@ -20,7 +20,6 @@ from web import web_app
 from info import INDEX_CHANNELS, FORCE_SUB_CHANNELS, SUPPORT_GROUP, LOG_CHANNEL, API_ID, DATA_DATABASE_URL, API_HASH, BOT_TOKEN, PORT, BIN_CHANNEL, ADMINS, SECOND_FILES_DATABASE_URL, FILES_DATABASE_URL
 from utils import temp, get_readable_time
 from database.users_chats_db import db
-from database.ia_filterdb import Media
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
@@ -80,7 +79,6 @@ class Bot(Client):
                 pass
             os.remove('restart.txt')
         temp.BOT = self
-        await Media.ensure_indexes()
         me = await self.get_me()
         temp.ME = me.id
         temp.U_NAME = me.username

@@ -46,16 +46,16 @@ async def inline_search(bot, query):
     for file in files:
         reply_markup = get_reply_markup()
         f_caption=FILE_CAPTION.format(
-            file_name=file.file_name,
-            file_size=get_size(file.file_size),
-            caption=file.caption
+            file_name=file['file_name'],
+            file_size=get_size(file['file_size']),
+            caption=file['caption']
         )
         results.append(
             InlineQueryResultCachedDocument(
-                title=file.file_name,
-                document_file_id=file.file_id,
+                title=file['file_name'],
+                document_file_id=file['_id'],
                 caption=f_caption,
-                description=f'Size: {get_size(file.file_size)}',
+                description=f'Size: {get_size(file['file_size'])}',
                 reply_markup=reply_markup))
 
     if results:

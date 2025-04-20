@@ -7,7 +7,7 @@ import datetime
 from Script import script
 from hydrogram import Client, filters, enums
 from hydrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from database.ia_filterdb import Media, get_file_details, delete_files, SecondMedia
+from database.ia_filterdb import db_count_documents, second_db_count_documents, get_file_details, delete_files
 from database.users_chats_db import db
 from info import SECOND_FILES_DATABASE_URL, TIME_ZONE, FORCE_SUB_CHANNELS, STICKERS, INDEX_CHANNELS, ADMINS, IS_VERIFY, VERIFY_TUTORIAL, VERIFY_EXPIRE, SHORTLINK_API, SHORTLINK_URL, DELETE_TIME, SUPPORT_LINK, UPDATES_LINK, LOG_CHANNEL, PICS, IS_STREAM, REACTIONS, PM_FILE_DELETE_TIME
 from utils import upload_image, get_settings, get_size, is_subscribed, is_check_admin, get_shortlink, get_verify_status, update_verify_status, save_group_settings, temp, get_readable_time, get_wish, get_seconds
@@ -141,13 +141,13 @@ async def start(client, message):
         for file in files:
             CAPTION = settings['caption']
             f_caption = CAPTION.format(
-                file_name=file.file_name,
-                file_size=get_size(file.file_size),
-                file_caption=file.caption
+                file_name=file['file_name'],
+                file_size=get_size(file['file_size']),
+                file_caption=file['caption']
             )      
             if settings.get('is_stream', IS_STREAM):
                 btn = [[
-                    InlineKeyboardButton("✛ ᴡᴀᴛᴄʜ & ᴅᴏᴡɴʟᴏᴀᴅ ✛", callback_data=f"stream#{file.file_id}")
+                    InlineKeyboardButton("✛ ᴡᴀᴛᴄʜ & ᴅᴏᴡɴʟᴏᴀᴅ ✛", callback_data=f"stream#{file['_id']}")
                 ],[
                     InlineKeyboardButton('⚡️ ᴜᴘᴅᴀᴛᴇs', url=UPDATES_LINK),
                     InlineKeyboardButton('💡 ꜱᴜᴘᴘᴏʀᴛ', url=SUPPORT_LINK)
@@ -164,7 +164,7 @@ async def start(client, message):
 
             msg = await client.send_cached_media(
                 chat_id=message.from_user.id,
-                file_id=file.file_id,
+                file_id=file['_id'],
                 caption=f_caption,
                 protect_content=False,
                 reply_markup=InlineKeyboardMarkup(btn)
@@ -186,7 +186,7 @@ async def start(client, message):
     files_ = await get_file_details(file_id)
     if not files_:
         return await message.reply('No Such File Exist!')
-    files = files_[0]
+    files = files_
     settings = await get_settings(int(grp_id))
     if type_ != 'shortlink' and settings['shortlink']:
         link = await get_shortlink(settings['url'], settings['api'], f"https://t.me/{temp.U_NAME}?start=shortlink_{grp_id}_{file_id}")
@@ -195,14 +195,14 @@ async def start(client, message):
         ],[
             InlineKeyboardButton("📍 ʜᴏᴡ ᴛᴏ ᴏᴘᴇɴ ʟɪɴᴋ 📍", url=settings['tutorial'])
         ]]
-        await message.reply(f"[{get_size(files.file_size)}] {files.file_name}\n\nYour file is ready, Please get using this link. 👍", reply_markup=InlineKeyboardMarkup(btn), protect_content=True)
+        await message.reply(f"[{get_size(files['file_size'])}] {files['file_name']}\n\nYour file is ready, Please get using this link. 👍", reply_markup=InlineKeyboardMarkup(btn), protect_content=True)
         return
             
     CAPTION = settings['caption']
     f_caption = CAPTION.format(
-        file_name = files.file_name,
-        file_size = get_size(files.file_size),
-        file_caption=files.caption
+        file_name = files['file_name'],
+        file_size = get_size(files['file_size']),
+        file_caption=files['caption']
     )
     if settings.get('is_stream', IS_STREAM):
         btn = [[
@@ -259,8 +259,7 @@ async def stats(bot, message):
     if user_id not in ADMINS:
         await message.delete()
         return
-    files = await Media.count_documents()
-    secnd_files = await SecondMedia.count_documents()
+    files = db_count_documents()
     users = await db.total_users_count()
     chats = await db.total_chat_count()
     used_files_db_size = get_size(await db.get_files_db_size())
@@ -268,8 +267,10 @@ async def stats(bot, message):
 
     if SECOND_FILES_DATABASE_URL:
         secnd_files_db_used_size = get_size(await db.get_second_files_db_size())
+        secnd_files = second_db_count_documents()
     else:
         secnd_files_db_used_size = '-'
+        secnd_files = '-'
 
     uptime = get_readable_time(time_now() - temp.START_TIME)
     await message.reply_text(script.STATUS_TXT.format(users, chats, used_data_db_size, files, used_files_db_size, secnd_files, secnd_files_db_used_size, uptime))    
@@ -446,32 +447,13 @@ async def delete_file(bot, message):
         query = message.text.split(" ", 1)[1]
     except:
         return await message.reply_text("Command Incomplete!\nUsage: /delete query")
-    msg = await message.reply_text('Searching...')
-    total, files = await delete_files(query)
-    if int(total) == 0:
-        return await msg.edit('Not have files in your query')
     btn = [[
         InlineKeyboardButton("YES", callback_data=f"delete_{query}")
     ],[
         InlineKeyboardButton("CLOSE", callback_data="close_data")
     ]]
-    await msg.edit(f"Total {total} files found in your query {query}.\n\nDo you want to delete?", reply_markup=InlineKeyboardMarkup(btn))
+    await message.reply_text(f"Do you want to delete all: {query} ?", reply_markup=InlineKeyboardMarkup(btn))
  
-@Client.on_message(filters.command('delete_all'))
-async def delete_all_index(bot, message):
-    user_id = message.from_user.id
-    if user_id not in ADMINS:
-        await message.delete()
-        return
-    btn = [[
-        InlineKeyboardButton(text="YES", callback_data="delete_all")
-    ],[
-        InlineKeyboardButton(text="CLOSE", callback_data="close_data")
-    ]]
-    files = await Media.count_documents()
-    if int(files) == 0:
-        return await message.reply_text('Not have files to delete')
-    await message.reply_text(f'Total {files} files have.\nDo you want to delete all?', reply_markup=InlineKeyboardMarkup(btn))
 
 @Client.on_message(filters.command('set_tutorial'))
 async def set_tutorial(client, message):

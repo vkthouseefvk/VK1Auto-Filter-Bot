@@ -831,7 +831,7 @@ async def auto_filter(client, msg, s, spoll=False):
     if not spoll:
         message = msg
         settings = await get_settings(message.chat.id)
-        search = message.text
+        search = re.sub(r"\s+", " ", re.sub(r"[-:\"';!]", " ", message.text)).strip()
         files, offset, total_results = await get_search_results(search)
         if not files:
             if settings["spell_check"]:
@@ -993,6 +993,7 @@ async def advantage_spell_chok(message, s):
         except:
             pass
         return
+    movies = list(dict.fromkeys(movies))
     user = message.from_user.id if message.from_user else 0
     buttons = [[
         InlineKeyboardButton(text=movie.get('title'), callback_data=f"spolling#{movie.movieID}#{user}")

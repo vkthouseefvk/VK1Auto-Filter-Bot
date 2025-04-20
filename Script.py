@@ -115,7 +115,7 @@ I can't find the <b>{}</b> in my database! 🥲
     USER_COMMAND_TXT = """<b>Here is bot user commands 👇
 
 /start - to check bot alive or not
-/gofile - upload file to gofile.io
+/img_2_link - upload image to uguu.se and get link
 /settings - to change group settings as your wish
 /set_template - to set custom imdb template
 /set_caption - to set custom bot files caption

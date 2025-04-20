@@ -45,15 +45,17 @@ async def is_subscribed(bot, query, channel):
     return btn
 
 
-def upload_to_gofile(file_path):
-    url = "https://store1.gofile.io/uploadFile"
-    
-    with open(file_path, "rb") as file:
-        files = {"file": file}
-        response = requests.post(url, files=files)
+def upload_image(file_path):
+    with open(file_path, 'rb') as f:
+        files = {'files[]': f}
+        response = requests.post("https://uguu.se/upload", files=files)
 
-    if response.status_code == 200 and response.json()["status"] == "ok":
-        return response.json()["data"]["downloadPage"]
+    if response.status_code == 200:
+        try:
+            data = response.json()
+            return data['files'][0]['url'].replace('\\/', '/')
+        except Exception as e:
+            return None
     else:
         return None
 

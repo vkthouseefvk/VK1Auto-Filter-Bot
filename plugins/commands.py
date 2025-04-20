@@ -10,7 +10,7 @@ from hydrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.ia_filterdb import Media, get_file_details, delete_files, SecondMedia
 from database.users_chats_db import db
 from info import SECOND_FILES_DATABASE_URL, TIME_ZONE, FORCE_SUB_CHANNELS, STICKERS, INDEX_CHANNELS, ADMINS, IS_VERIFY, VERIFY_TUTORIAL, VERIFY_EXPIRE, SHORTLINK_API, SHORTLINK_URL, DELETE_TIME, SUPPORT_LINK, UPDATES_LINK, LOG_CHANNEL, PICS, IS_STREAM, REACTIONS, PM_FILE_DELETE_TIME
-from utils import upload_to_gofile, get_settings, get_size, is_subscribed, is_check_admin, get_shortlink, get_verify_status, update_verify_status, save_group_settings, temp, get_readable_time, get_wish, get_seconds
+from utils import upload_image, get_settings, get_size, is_subscribed, is_check_admin, get_shortlink, get_verify_status, update_verify_status, save_group_settings, temp, get_readable_time, get_wish, get_seconds
 
 async def del_stk(s):
     await asyncio.sleep(3)
@@ -492,17 +492,17 @@ async def set_tutorial(client, message):
     await save_group_settings(grp_id, 'tutorial', tutorial)
     await message.reply_text(f"Successfully changed tutorial for {title} to\n\n{tutorial}")
 
-@Client.on_message(filters.command('gofile'))
-async def upload_file_to_gofile(bot, message):
+@Client.on_message(filters.command('img_2_link'))
+async def img_2_link(bot, message):
     reply_to_message = message.reply_to_message
     if not reply_to_message:
-        return await message.reply('Reply to any photo or video.')
-    file = reply_to_message.photo or reply_to_message.video or None
+        return await message.reply('Reply to any photo')
+    file = reply_to_message.photo
     if file is None:
         return await message.reply('Invalid media.')
     text = await message.reply_text(text="ᴘʀᴏᴄᴇssɪɴɢ....")   
     path = await reply_to_message.download()  
-    response = upload_to_gofile(path)
+    response = upload_image(path)
     if not response:
          await text.edit_text(text="Upload failed!")
          return    
@@ -510,7 +510,7 @@ async def upload_file_to_gofile(bot, message):
         os.remove(path)
     except:
         pass
-    await text.edit_text(f"<b>❤️ Your link ready 👇\n\n{response}</b>")
+    await text.edit_text(f"<b>❤️ Your link ready 👇\n\n{response}</b>", disable_web_page_preview=True)
 
 @Client.on_message(filters.command('ping'))
 async def ping(client, message):

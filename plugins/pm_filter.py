@@ -5,7 +5,7 @@ import math
 from hydrogram.errors.exceptions.bad_request_400 import MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
 from Script import script
 from datetime import datetime, timedelta
-from info import SECOND_FILES_DATABASE_URL, TIME_ZONE, ADMINS, URL, MAX_BTN, BIN_CHANNEL, IS_STREAM, DELETE_TIME, FILMS_LINK, LOG_CHANNEL, SUPPORT_GROUP, SUPPORT_LINK, UPDATES_LINK, LANGUAGES, QUALITY
+from info import FORCE_SUB_CHANNELS, SECOND_FILES_DATABASE_URL, TIME_ZONE, ADMINS, URL, MAX_BTN, BIN_CHANNEL, IS_STREAM, DELETE_TIME, FILMS_LINK, LOG_CHANNEL, SUPPORT_GROUP, SUPPORT_LINK, UPDATES_LINK, LANGUAGES, QUALITY
 from hydrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, InputMediaPhoto
 from hydrogram import Client, filters, enums
 from utils import get_size, is_subscribed, is_check_admin, get_wish, get_shortlink, get_readable_time, get_poster, temp, get_settings, save_group_settings
@@ -513,7 +513,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
     elif query.data.startswith("checksub"):
         ident, mc = query.data.split("#")
         settings = await get_settings(int(mc.split("_", 2)[1]))
-        btn = await is_subscribed(client, query, settings['fsub'])
+        btn = await is_subscribed(client, query, settings['fsub'] + FORCE_SUB_CHANNELS)
         if btn:
             await query.answer(f"Hello {query.from_user.first_name},\nPlease join my updates channel and try again.", show_alert=True)
             btn.append(
@@ -524,27 +524,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await query.answer(url=f"https://t.me/{temp.U_NAME}?start={mc}")
         await query.message.delete()
 
-    elif query.data.startswith("unmuteme"):
-        ident, userid = query.data.split("#")
-        user_id = query.from_user.id
-        settings = await get_settings(int(query.message.chat.id))
-        if userid == 0:
-            await query.answer("You are anonymous admin !", show_alert=True)
-            return
-        if userid != user_id:
-            await query.answer("Not For You ☠️", show_alert=True)
-            return
-        btn = await is_subscribed(client, query, settings['fsub'])
-        if btn:
-           await query.answer("Kindly Join Given Channel To Get Unmute", show_alert=True)
-        else:
-            await client.unban_chat_member(query.message.chat.id, user_id)
-            await query.answer("Unmuted Successfully !", show_alert=True)
-            try:
-                await query.message.delete()
-            except:
-                return
-   
     elif query.data == "buttons":
         await query.answer("⚠️")
 

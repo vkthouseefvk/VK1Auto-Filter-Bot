@@ -74,6 +74,16 @@ async def start(client, message):
 
     mc = message.command[1]
 
+    if mc.startswith('inline_fsub'):
+        btn = await is_subscribed(client, message, FORCE_SUB_CHANNELS)
+        if btn:
+            reply_markup = InlineKeyboardMarkup(btn)
+            await message.reply(f"Please join my 'Updates Channel' and use inline search. 👍",
+                reply_markup=reply_markup,
+                parse_mode=enums.ParseMode.HTML
+            )
+            return 
+
     if mc.startswith('verify'):
         _, token = mc.split("_", 1)
         verify_status = await get_verify_status(message.from_user.id)
@@ -106,7 +116,7 @@ async def start(client, message):
 
     settings = await get_settings(int(mc.split("_", 2)[1]))
     if settings['fsub']:
-        btn = await is_subscribed(client, message, settings['fsub'])
+        btn = await is_subscribed(client, message, settings['fsub'] + FORCE_SUB_CHANNELS)
         if btn:
             btn.append(
                 [InlineKeyboardButton("🔁 Try Again 🔁", callback_data=f"checksub#{mc}")]

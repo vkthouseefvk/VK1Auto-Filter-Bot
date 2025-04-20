@@ -17,7 +17,7 @@ from hydrogram.errors import FloodWait
 from aiohttp import web
 from typing import Union, Optional, AsyncGenerator
 from web import web_app
-from info import SUPPORT_GROUP, LOG_CHANNEL, API_ID, DATA_DATABASE_URL, API_HASH, BOT_TOKEN, PORT, BIN_CHANNEL, ADMINS, SECOND_FILES_DATABASE_URL, FILES_DATABASE_URL
+from info import INDEX_CHANNELS, FORCE_SUB_CHANNELS, SUPPORT_GROUP, LOG_CHANNEL, API_ID, DATA_DATABASE_URL, API_HASH, BOT_TOKEN, PORT, BIN_CHANNEL, ADMINS, SECOND_FILES_DATABASE_URL, FILES_DATABASE_URL
 from utils import temp, get_readable_time
 from database.users_chats_db import db
 from database.ia_filterdb import Media
@@ -105,11 +105,23 @@ class Bot(Client):
         except:
             logger.error("Make sure bot admin in SUPPORT_GROUP, exiting now")
             exit()
+        for fs in FORCE_SUB_CHANNELS:
+            try:
+                await self.get_chat(fs)
+            except:
+                logger.error(f"Make sure bot admin in FORCE_SUB_CHANNELS - {fs}, exiting now")
+                exit()
+        for ic in INDEX_CHANNELS:
+            try:
+                await self.get_chat(ic)
+            except:
+                logger.error(f"Bot can't access FORCE_SUB_CHANNELS - {ic}, exiting now")
+                exit()
         for admin in ADMINS:
             try:
                 await self.send_message(chat_id=admin, text="<b>✅ ʙᴏᴛ ʀᴇsᴛᴀʀᴛᴇᴅ</b>")
             except:
-                logger.warning(f"Admin ({admin}) not started this bot yet")
+                logger.warning(f"ADMINS - {admin} not started this bot yet")
 
     async def stop(self, *args):
         await super().stop()

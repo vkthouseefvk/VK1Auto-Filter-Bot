@@ -30,6 +30,7 @@ class temp(object):
     PREMIUM = {}
 
 async def is_subscribed(bot, query, channel):
+    channel = list(dict.fromkeys(channel))
     btn = []
     for id in channel:
         chat = await bot.get_chat(int(id))

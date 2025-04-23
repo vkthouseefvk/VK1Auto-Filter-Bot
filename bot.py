@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 import os
 import time
 import asyncio
-#import uvloop
+import uvloop
 from hydrogram import types
 from hydrogram import Client
 from hydrogram.errors import FloodWait
@@ -23,7 +23,7 @@ from database.users_chats_db import db
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
-#uvloop.install()
+uvloop.install()
 
 class Bot(Client):
     def __init__(self):

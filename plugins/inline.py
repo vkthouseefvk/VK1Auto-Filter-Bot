@@ -13,7 +13,7 @@ def is_banned(query: InlineQuery):
 async def inline_search(bot, query):
     """Show search results for given inline query"""
 
-    is_fsub = await is_subscribed(bot, query, FORCE_SUB_CHANNELS)
+    is_fsub = await is_subscribed(bot, query)
     if is_fsub:
         await query.answer(results=[],
                            cache_time=0,

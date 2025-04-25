@@ -28,9 +28,7 @@ class Database:
         'api': SHORTLINK_API,
         'shortlink': SHORTLINK,
         'tutorial': TUTORIAL,
-        'links': LINK_MODE,
-        'fsub': FORCE_SUB_CHANNELS,
-        'is_stream': IS_STREAM
+        'links': LINK_MODE
     }
 
     default_verify = {
@@ -52,6 +50,7 @@ class Database:
         self.col = data_db.Users
         self.grp = data_db.Groups
         self.prm = data_db.Premiums
+        self.req = data_db.Requests
 
     def new_user(self, id, name):
         return dict(
@@ -119,6 +118,15 @@ class Database:
 
     async def delete_chat(self, grp_id):
         self.grp.delete_many({'id': int(grp_id)})
+
+    def find_join_req(self, id):
+        return bool(self.req.find_one({'id': id}))
+
+    def add_join_req(self, id):
+        self.req.insert_one({'id': id})
+
+    def del_join_req(self):
+        self.req.drop()
 
     async def get_banned(self):
         users = self.col.find({'ban_status.is_banned': True})

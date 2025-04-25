@@ -62,6 +62,11 @@ else:
 FORCE_SUB_CHANNELS = [int(fsub_channels) for fsub_channels in environ.get('FORCE_SUB_CHANNELS', '').split()]
 if len(FORCE_SUB_CHANNELS) == 0:
     logger.info('FORCE_SUB_CHANNELS is empty')
+REQUEST_FORCE_SUB_CHANNELS = environ.get('REQUEST_FORCE_SUB_CHANNELS', '')
+if len(REQUEST_FORCE_SUB_CHANNELS) == 0:
+    logger.info('REQUEST_FORCE_SUB_CHANNELS is empty')
+else:
+    REQUEST_FORCE_SUB_CHANNELS = int(REQUEST_FORCE_SUB_CHANNELS)
     
 # support group
 SUPPORT_GROUP = environ.get('SUPPORT_GROUP', '')

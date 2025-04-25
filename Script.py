@@ -113,7 +113,8 @@ I can't find the <b>{}</b> in my database! 🥲
 /invite_link - to generate invite link
 /index - to index bot accessible channels
 /add_prm - to add new premium user
-/rm_prm - to add remove premium user</b>"""
+/rm_prm - to add remove premium user
+/delreq - to delete join request in db (if change REQUEST_FORCE_SUB_CHANNELS then must need use this command)</b>"""
     
     PLAN_TXT = """Activate any premium plan to get exclusive features.
 
@@ -146,9 +147,7 @@ Support:
 /get_custom_settings - to get your group settings details
 /set_welcome - to set custom new joined users welcome message for group
 /set_tutorial - to set custom tutorial link in result page button
-/id - to check group or channel id
-/set_fsub - to set force subscribe channels
-/remove_fsub - to remove all force subscribe channel</b>"""
+/id - to check group or channel id</b>"""
     
     SOURCE_TXT = """<b>ʙᴏᴛ ɢɪᴛʜᴜʙ ʀᴇᴘᴏsɪᴛᴏʀʏ -
 

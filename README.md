@@ -58,8 +58,6 @@
 • /chats - to get all groups.
 • /invite_link - to generate invite link.
 • /index - to index bot accessible channels.
-• /set_fsub - to set force subscribe channel.
-• /remove_fsub - to remove force subscribe channel.
 ```
 
 ## Variables

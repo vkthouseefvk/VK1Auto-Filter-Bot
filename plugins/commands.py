@@ -76,7 +76,7 @@ async def start(client, message):
     mc = message.command[1]
 
     if mc.startswith('inline_fsub'):
-        btn = await is_subscribed(client, message, FORCE_SUB_CHANNELS)
+        btn = await is_subscribed(client, message)
         if btn:
             reply_markup = InlineKeyboardMarkup(btn)
             await message.reply(f"Please join my 'Updates Channel' and use inline search. 👍",
@@ -116,20 +116,19 @@ async def start(client, message):
         return
 
     settings = await get_settings(int(mc.split("_", 2)[1]))
-    if settings['fsub']:
-        btn = await is_subscribed(client, message, settings['fsub'] + FORCE_SUB_CHANNELS)
-        if btn:
-            btn.append(
-                [InlineKeyboardButton("🔁 Try Again 🔁", callback_data=f"checksub#{mc}")]
-            )
-            reply_markup = InlineKeyboardMarkup(btn)
-            await message.reply_photo(
-                photo=random.choice(PICS),
-                caption=f"👋 Hello {message.from_user.mention},\n\nPlease join my 'Updates Channel' and try again. 😇",
-                reply_markup=reply_markup,
-                parse_mode=enums.ParseMode.HTML
-            )
-            return 
+    btn = await is_subscribed(client, message)
+    if btn:
+        btn.append(
+            [InlineKeyboardButton("🔁 Try Again 🔁", callback_data=f"checksub#{mc}")]
+        )
+        reply_markup = InlineKeyboardMarkup(btn)
+        await message.reply_photo(
+            photo=random.choice(PICS),
+            caption=f"👋 Hello {message.from_user.mention},\n\nPlease join my 'Updates Channel' and try again. 😇",
+            reply_markup=reply_markup,
+            parse_mode=enums.ParseMode.HTML
+        )
+        return 
         
     if mc.startswith('all'):
         _, grp_id, key = mc.split("_", 2)
@@ -146,7 +145,7 @@ async def start(client, message):
                 file_size=get_size(file['file_size']),
                 file_caption=file['caption']
             )      
-            if settings.get('is_stream', IS_STREAM):
+            if IS_STREAM:
                 btn = [[
                     InlineKeyboardButton("✛ ᴡᴀᴛᴄʜ & ᴅᴏᴡɴʟᴏᴀᴅ ✛", callback_data=f"stream#{file['_id']}")
                 ],[
@@ -205,7 +204,7 @@ async def start(client, message):
         file_size = get_size(files['file_size']),
         file_caption=files['caption']
     )
-    if settings.get('is_stream', IS_STREAM):
+    if IS_STREAM:
         btn = [[
             InlineKeyboardButton("✛ ᴡᴀᴛᴄʜ & ᴅᴏᴡɴʟᴏᴀᴅ ✛", callback_data=f"stream#{file_id}")
         ],[
@@ -312,9 +311,6 @@ async def settings(client, message):
             InlineKeyboardButton('Result Page', callback_data=f'setgs#links#{settings["links"]}#{str(grp_id)}'),
             InlineKeyboardButton('⛓ Link' if settings["links"] else '🧲 Button', callback_data=f'setgs#links#{settings["links"]}#{str(grp_id)}')
         ],[
-            InlineKeyboardButton('Stream', callback_data=f'setgs#is_stream#{settings.get("is_stream", IS_STREAM)}#{str(grp_id)}'),
-            InlineKeyboardButton('✅ On' if settings.get("is_stream", IS_STREAM) else '❌ Off', callback_data=f'setgs#is_stream#{settings.get("is_stream", IS_STREAM)}#{str(grp_id)}')
-        ],[
             InlineKeyboardButton('❌ Close ❌', callback_data='close_data')
         ]]
         await message.reply_text(
@@ -411,9 +407,7 @@ File Caption: {settings['caption']}
 
 Welcome Text: {settings['welcome_text']}
 
-Tutorial Link: {settings['tutorial']}
-
-Force Channels: {str(settings['fsub'])[1:-1] if settings['fsub'] else 'Not Set'}"""
+Tutorial Link: {settings['tutorial']}"""
 
     btn = [[
         InlineKeyboardButton(text="Close", callback_data="close_data")
@@ -503,56 +497,6 @@ async def ping(client, message):
     end_time = time_now.monotonic()
     await msg.edit(f'{round((end_time - start_time) * 1000)} ms')
     
-
-@Client.on_message(filters.command('set_fsub'))
-async def set_fsub(client, message):
-    user_id = message.from_user.id
-    if not user_id:
-        return await message.reply("<b>You are Anonymous admin you can't use this command !</b>")
-    chat_type = message.chat.type
-    if chat_type not in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
-        return await message.reply_text("Use this command in group.")      
-    grp_id = message.chat.id
-    title = message.chat.title
-    if not await is_check_admin(client, grp_id, user_id):
-        return await message.reply_text('You not admin in this group.')
-    try:
-        ids = message.text.split(" ", 1)[1]
-        fsub_ids = list(map(int, ids.split()))
-    except IndexError:
-        return await message.reply_text("Command Incomplete!\n\nCan multiple channel add separate by spaces. Like: /set_fsub id1 id2 id3")
-    except ValueError:
-        return await message.reply_text('Make sure ids is integer.')        
-    channels = "Channels:\n"
-    for id in fsub_ids:
-        try:
-            chat = await client.get_chat(id)
-        except Exception as e:
-            return await message.reply_text(f"<code>{id}</code> is invalid!\nMake sure this bot admin in that channel.\n\nError - {e}")
-        if chat.type != enums.ChatType.CHANNEL:
-            return await message.reply_text(f"<code>{id}</code> is not channel.")
-        channels += f'{chat.title}\n'
-    await save_group_settings(grp_id, 'fsub', fsub_ids)
-    await message.reply_text(f"Successfully set force channels for {title} to\n\n<code>{channels}</code>")
-
-@Client.on_message(filters.command('remove_fsub'))
-async def remove_fsub(client, message):
-    grp_id = message.chat.id
-    settings = await get_settings(int(grp_id))
-    user_id = message.from_user.id
-    chat_type = message.chat.type
-    if not user_id:
-        return await message.reply("<b>You are Anonymous admin you can't use this command !</b>")
-    if chat_type not in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
-        return await message.reply_text("Use this command in group.")
-    if not await is_check_admin(client, grp_id, user_id):
-        return await message.reply_text('You not admin in this group.')
-    if not settings['fsub']:
-        await message.reply_text("ʏᴏᴜ ᴅɪᴅɴ'ᴛ ᴀᴅᴅᴇᴅ ᴀɴʏ ꜰᴏʀᴄᴇ sᴜʙsᴄʀɪʙᴇ ᴄʜᴀɴɴᴇʟ...") # query.answer not work in command so I can change to message.reply_text
-        return
-    await save_group_settings(grp_id, 'fsub', FORCE_SUB_CHANNELS)
-    await message.reply_text("<b>Successfully removed your force channel id...</b>")
-
 
 @Client.on_message(filters.command('myplan') & filters.private)
 async def myplan(client, message):

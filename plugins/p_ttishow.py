@@ -2,9 +2,9 @@ import random
 import os
 import sys
 from hydrogram import Client, filters, enums
-from hydrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from hydrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ChatJoinRequest
 from hydrogram.errors.exceptions.bad_request_400 import MessageTooLong
-from info import ADMINS, LOG_CHANNEL, PICS, SUPPORT_LINK, UPDATES_LINK
+from info import ADMINS, LOG_CHANNEL, PICS, SUPPORT_LINK, UPDATES_LINK, REQUEST_FORCE_SUB_CHANNELS
 from database.users_chats_db import db
 from utils import temp, get_settings
 from Script import script
@@ -241,3 +241,13 @@ async def list_chats(bot, message):
         os.remove('chats.txt')
 
 
+@Client.on_chat_join_request(filters.chat(REQUEST_FORCE_SUB_CHANNELS))
+async def join_reqs(client, message: ChatJoinRequest):
+    if not db.find_join_req(message.from_user.id):
+        db.add_join_req(message.from_user.id)
+
+
+@Client.on_message(filters.command("delreq") & filters.private & filters.user(ADMINS))
+async def del_requests(client, message):
+    db.del_join_req()
+    await message.reply('Deleted join requests')

@@ -9,3 +9,4 @@ aiofiles
 speedtest-cli
 uvloop
 requests
+qrcode

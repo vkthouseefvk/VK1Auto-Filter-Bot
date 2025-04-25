@@ -14,6 +14,7 @@ class script(object):
 ★ Country: Sri Lanka 🇱🇰"""
 
     STATUS_TXT = """👤 Total Users: <code>{}</code>
+😎 Premium Users: <code>{}</code>
 👥 Total Chats: <code>{}</code>
 🗳 Data database used: <code>{}</code>
 
@@ -110,11 +111,15 @@ I can't find the <b>{}</b> in my database! 🥲
 /users - to get all users details
 /chats - to get all groups
 /invite_link - to generate invite link
-/index - to index bot accessible channels</b>"""
+/index - to index bot accessible channels
+/add_prm - to add new premium user
+/rm_prm - to add remove premium user</b>"""
     
     PLAN_TXT = """Activate any premium plan to get exclusive features.
 
-You can request any premium plan from my admins, then you can pay that amount and get exclusive features.
+You can activate any premium plan and then you can get exclusive features.
+
+- INR 10 for pre day -
 
 Basic premium features:
 Ad free experience
@@ -125,12 +130,14 @@ No shortlink
 Admins support
 And more...
 
-Admins:
+Support:
 @Hansaka_Anuhas"""
 
     USER_COMMAND_TXT = """<b>Here is bot user commands 👇
 
 /start - to check bot alive or not
+/myplan - to check my activated premium plan
+/plan - to view premium plan details
 /img_2_link - upload image to uguu.se and get link
 /settings - to change group settings as your wish
 /set_template - to set custom imdb template

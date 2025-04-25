@@ -1,11 +1,13 @@
 import asyncio
 import re
 from time import time as time_now
-import math
+import math, os
+import qrcode
+from hydrogram.errors import ListenerTimeout
 from hydrogram.errors.exceptions.bad_request_400 import MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
 from Script import script
 from datetime import datetime, timedelta
-from info import FORCE_SUB_CHANNELS, SECOND_FILES_DATABASE_URL, TIME_ZONE, ADMINS, URL, MAX_BTN, BIN_CHANNEL, IS_STREAM, DELETE_TIME, FILMS_LINK, LOG_CHANNEL, SUPPORT_GROUP, SUPPORT_LINK, UPDATES_LINK, LANGUAGES, QUALITY
+from info import RECEIPT_SEND_USERNAME, UPI_ID, UPI_NAME, PRE_DAY_AMOUNT, FORCE_SUB_CHANNELS, SECOND_FILES_DATABASE_URL, TIME_ZONE, ADMINS, URL, MAX_BTN, BIN_CHANNEL, IS_STREAM, DELETE_TIME, FILMS_LINK, LOG_CHANNEL, SUPPORT_GROUP, SUPPORT_LINK, UPDATES_LINK, LANGUAGES, QUALITY
 from hydrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, InputMediaPhoto
 from hydrogram import Client, filters, enums
 from utils import is_premium, get_size, is_subscribed, is_check_admin, get_wish, get_shortlink, get_readable_time, get_poster, temp, get_settings, save_group_settings
@@ -548,6 +550,38 @@ async def cb_handler(client: Client, query: CallbackQuery):
         db.update_plan(query.from_user.id, mp)
         await query.message.edit(f"Congratulations! Your activated trial for 1 hour\nExpire: {ex.strftime('%Y.%m.%d %H:%M:%S')}")
 
+    elif query.data == 'activate_plan':
+        q = await query.message.edit('How many days you need premium plan?\nSend days as number')
+        msg = await client.listen(chat_id=query.message.chat.id, user_id=query.from_user.id)
+        try:
+            d = int(msg.text)
+        except:
+            await q.delete()
+            return await query.message.reply('Invalid number\nIf you want 7 days then send 7 only')
+        transaction_note = f'{d} days premium plan for {query.from_user.id}'
+        amount = d * PRE_DAY_AMOUNT
+        upi_uri = f"upi://pay?pa={UPI_ID}&pn={UPI_NAME}&am={amount}&cu=INR&tn={transaction_note}"
+        qr = qrcode.make(upi_uri)
+        p = f"upi_qr_{query.from_user.id}.png"
+        qr.save(p)
+        await q.delete()
+        await query.message.reply_photo(p, caption=f"{d} days premium plan amount is {amount} INR\nScan this QR in your UPI support platform and pay that amount (This is dynamic QR)\n\nSend your receipt as photo in here (timeout in 10 mins)\n\nSupport: {RECEIPT_SEND_USERNAME}")
+        os.remove(p)
+        try:
+            msg = await client.listen(chat_id=query.message.chat.id, user_id=query.from_user.id, timeout=600)
+        except ListenerTimeout:
+            await q.delete()
+            return await query.message.reply(f'Your time is over, send your receipt to: {RECEIPT_SEND_USERNAME}')
+        if msg.photo:
+            await q.delete()
+            await query.message.reply(f'Your receipt was sent, wait some time\nSupport: {RECEIPT_SEND_USERNAME}')
+            await client.send_photo(RECEIPT_SEND_USERNAME, msg.photo.file_id, transaction_note)
+        else:
+            await q.delete()
+            await query.message.reply(f"Not valid photo, send your receipt to: {RECEIPT_SEND_USERNAME}")
+
+
+
     elif query.data == "start":
         buttons = [[
             InlineKeyboardButton("+ ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ +", url=f'http://t.me/{temp.U_NAME}?startgroup=start')
@@ -590,6 +624,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         files = db_count_documents()
         users = await db.total_users_count()
         chats = await db.total_chat_count()
+        prm = db.get_premium_count()
         used_files_db_size = get_size(await db.get_files_db_size())
         used_data_db_size = get_size(await db.get_data_db_size())
 
@@ -603,7 +638,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         buttons = [[
             InlineKeyboardButton('« ʙᴀᴄᴋ', callback_data='about')
         ]]
-        await query.message.edit_text(script.STATUS_TXT.format(users, chats, used_data_db_size, files, used_files_db_size, secnd_files, secnd_files_db_used_size, uptime), reply_markup=InlineKeyboardMarkup(buttons)
+        await query.message.edit_text(script.STATUS_TXT.format(users, prm, chats, used_data_db_size, files, used_files_db_size, secnd_files, secnd_files_db_used_size, uptime), reply_markup=InlineKeyboardMarkup(buttons)
         )
         
     elif query.data == "owner":

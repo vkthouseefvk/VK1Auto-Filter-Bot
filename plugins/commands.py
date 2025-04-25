@@ -263,6 +263,7 @@ async def stats(bot, message):
     files = db_count_documents()
     users = await db.total_users_count()
     chats = await db.total_chat_count()
+    prm = db.get_premium_count()
     used_files_db_size = get_size(await db.get_files_db_size())
     used_data_db_size = get_size(await db.get_data_db_size())
 
@@ -274,7 +275,7 @@ async def stats(bot, message):
         secnd_files = '-'
 
     uptime = get_readable_time(time_now() - temp.START_TIME)
-    await message.reply_text(script.STATUS_TXT.format(users, chats, used_data_db_size, files, used_files_db_size, secnd_files, secnd_files_db_used_size, uptime))    
+    await message.reply_text(script.STATUS_TXT.format(users, prm, chats, used_data_db_size, files, used_files_db_size, secnd_files, secnd_files_db_used_size, uptime))    
     
 @Client.on_message(filters.command('settings'))
 async def settings(client, message):
@@ -568,6 +569,8 @@ async def myplan(client, message):
 async def plan(client, message):
     btn = [[
         InlineKeyboardButton('Activate Trial', callback_data='activate_trial')
+    ],[
+        InlineKeyboardButton('Activate Plan', callback_data='activate_plan')
     ]]
     await message.reply(script.PLAN_TXT, reply_markup=InlineKeyboardMarkup(btn), disable_web_page_preview=True)
 
@@ -600,3 +603,29 @@ async def add_prm(bot, message):
             pass
     else:
         await message.reply(f"{user.mention} is already premium user")
+
+
+
+@Client.on_message(filters.command('rm_prm') & filters.user(ADMINS))
+async def rm_prm(bot, message):
+    try:
+        _, user_id = message.text.split(' ')
+    except:
+        return await message.reply('Usage: /rm_prm user_id')
+    try:
+        user = await bot.get_users(user_id)
+    except Exception as e:
+        return await message.reply(f'Error: {e}')
+    if not await is_premium(user.id, bot):
+        await message.reply(f"{user.mention} is not premium user")
+    else:
+        mp = db.get_plan(user.id)
+        mp['expire'] = ''
+        mp['plan'] = ''
+        mp['premium'] = False
+        db.update_plan(user.id, mp)
+        await message.reply(f"{user.mention} is no longer premium user")
+        try:
+            await bot.send_message(user.id, "Your premium plan was removed by admin")
+        except:
+            pass

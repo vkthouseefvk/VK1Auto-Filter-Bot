@@ -206,5 +206,8 @@ class Database:
             self.prm.insert_one({'id': id, 'status': data})
         self.prm.update_one({'id': id}, {'$set': {'status': data}})
 
+    def get_premium_count(self):
+        return self.prm.count_documents({'status.premium': True})
+
 
 db = Database()

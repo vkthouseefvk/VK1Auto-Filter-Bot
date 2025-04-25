@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 from info import TIME_ZONE, ADMINS, DATABASE_NAME, DATA_DATABASE_URL, FILES_DATABASE_URL, SECOND_FILES_DATABASE_URL, FORCE_SUB_CHANNELS, IMDB_TEMPLATE, WELCOME_TEXT, LINK_MODE, TUTORIAL, SHORTLINK_URL, SHORTLINK_API, SHORTLINK, FILE_CAPTION, IMDB, WELCOME, SPELL_CHECK, PROTECT_CONTENT, AUTO_FILTER, AUTO_DELETE, IS_STREAM, VERIFY_EXPIRE
 import time
-import datetime
+from datetime import datetime
 
 files_db_client = MongoClient(FILES_DATABASE_URL)
 files_db = files_db_client[DATABASE_NAME]
@@ -41,10 +41,17 @@ class Database:
         'expire_time': 0
     }
     
+    default_prm = {
+        'expire': '',
+        'trial': False,
+        'plan': '',
+        'premium': False
+    }
+
     def __init__(self):
         self.col = data_db.Users
         self.grp = data_db.Groups
-        self.prm_users = data_db.Premium_Users
+        self.prm = data_db.Premiums
 
     def new_user(self, id, name):
         return dict(
@@ -187,5 +194,17 @@ class Database:
     async def get_all_chats_count(self):
         grp = self.grp.count_documents({})
         return grp
-        
+    
+    def get_plan(self, id):
+        st = self.prm.find_one({'id': id})
+        if st:
+            return st['status']
+        return self.default_prm
+    
+    def update_plan(self, id, data):
+        if not self.prm.find_one({'id': id}):
+            self.prm.insert_one({'id': id, 'status': data})
+        self.prm.update_one({'id': id}, {'$set': {'status': data}})
+
+
 db = Database()

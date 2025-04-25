@@ -32,6 +32,8 @@ class temp(object):
 async def is_subscribed(bot, query, channel):
     channel = list(dict.fromkeys(channel))
     btn = []
+    if await is_premium(query.from_user.id, bot):
+        return btn
     for id in channel:
         chat = await bot.get_chat(int(id))
         try:
@@ -161,6 +163,21 @@ async def update_verify_status(user_id, verify_token="", is_verified=False, link
     await db.update_verify_status(user_id, current)
 
     
+async def is_premium(user_id, bot):
+    mp = db.get_plan(user_id)
+    if mp['premium']:
+        if mp['expire'] < datetime.now():
+            await bot.send_message(user_id, f"Your premium {mp['plan']} plan is expired in {mp['expire'].strftime('%Y.%m.%d %H:%M:%S')}, use /plan to activate new plan again")
+            mp['expire'] = ''
+            mp['plan'] = ''
+            mp['premium'] = False
+            db.update_plan(user_id, mp)
+            return False
+        return True
+    else:
+        return False
+
+
 async def broadcast_messages(user_id, message, pin):
     try:
         m = await message.copy(chat_id=user_id)

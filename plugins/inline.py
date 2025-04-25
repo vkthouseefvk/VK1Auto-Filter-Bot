@@ -1,7 +1,7 @@
 from hydrogram import Client
 from hydrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultCachedDocument, InlineQuery
 from database.ia_filterdb import get_search_results
-from utils import get_size, temp, get_verify_status, is_subscribed
+from utils import get_size, temp, get_verify_status, is_subscribed, is_premium
 from info import CACHE_TIME, SUPPORT_LINK, UPDATES_LINK, FILE_CAPTION, IS_VERIFY, FORCE_SUB_CHANNELS
 
 cache_time = CACHE_TIME
@@ -23,7 +23,7 @@ async def inline_search(bot, query):
 
 
     verify_status = await get_verify_status(query.from_user.id)
-    if IS_VERIFY and not verify_status['is_verified']:
+    if IS_VERIFY and not verify_status['is_verified'] and not await is_premium(query.from_user.id, bot):
         await query.answer(results=[],
                            cache_time=0,
                            switch_pm_text="You're not verified today :(",
@@ -44,7 +44,7 @@ async def inline_search(bot, query):
     files, next_offset, total = await get_search_results(string, offset=offset)
 
     for file in files:
-        reply_markup = get_reply_markup()
+        reply_markup = get_reply_markup(string)
         f_caption=FILE_CAPTION.format(
             file_name=file['file_name'],
             file_size=get_size(file['file_size']),
@@ -79,8 +79,10 @@ async def inline_search(bot, query):
                            switch_pm_parameter="start")
 
 
-def get_reply_markup():
+def get_reply_markup(s):
     buttons = [[
+        InlineKeyboardButton('🔎 Search Again', switch_inline_query_current_chat=s or '')
+    ],[
         InlineKeyboardButton('⚡️ ᴜᴘᴅᴀᴛᴇs ᴄʜᴀɴɴᴇʟ ⚡️', url=UPDATES_LINK),
         InlineKeyboardButton('💡 Support Group 💡', url=SUPPORT_LINK)
     ]]

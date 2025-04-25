@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from info import FORCE_SUB_CHANNELS, SECOND_FILES_DATABASE_URL, TIME_ZONE, ADMINS, URL, MAX_BTN, BIN_CHANNEL, IS_STREAM, DELETE_TIME, FILMS_LINK, LOG_CHANNEL, SUPPORT_GROUP, SUPPORT_LINK, UPDATES_LINK, LANGUAGES, QUALITY
 from hydrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, InputMediaPhoto
 from hydrogram import Client, filters, enums
-from utils import get_size, is_subscribed, is_check_admin, get_wish, get_shortlink, get_readable_time, get_poster, temp, get_settings, save_group_settings
+from utils import is_premium, get_size, is_subscribed, is_check_admin, get_wish, get_shortlink, get_readable_time, get_poster, temp, get_settings, save_group_settings
 from database.users_chats_db import db
 from database.ia_filterdb import get_search_results,delete_files, db_count_documents, second_db_count_documents
 
@@ -133,7 +133,7 @@ async def next_page(bot, query):
         ]
             for file in files
         ]
-    if settings['shortlink']:
+    if settings['shortlink'] and not await is_premium(query.from_user.id, bot):
         btn.insert(0,
             [InlineKeyboardButton("📰 ʟᴀɴɢᴜᴀɢᴇs", callback_data=f"languages#{key}#{req}#{offset}"),
             InlineKeyboardButton("🔍 ǫᴜᴀʟɪᴛʏ", callback_data=f"quality#{key}#{req}#{offset}")]
@@ -233,7 +233,7 @@ async def filter_languages_cb_handler(client: Client, query: CallbackQuery):
         ]
             for file in files
         ]
-    if settings['shortlink']:
+    if settings['shortlink'] and not await is_premium(query.from_user.id, client):
         btn.insert(1,
             [InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", url=await get_shortlink(settings['url'], settings['api'], f'https://t.me/{temp.U_NAME}?start=all_{query.message.chat.id}_{key}')),
             InlineKeyboardButton("🔍 ǫᴜᴀʟɪᴛʏ", callback_data=f"quality#{key}#{req}#{offset}")]
@@ -287,7 +287,7 @@ async def lang_next_page(bot, query):
         ]
             for file in files
         ]
-    if settings['shortlink']:
+    if settings['shortlink'] and not await is_premium(query.from_user.id, bot):
         btn.insert(1,
             [InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", url=await get_shortlink(settings['url'], settings['api'], f'https://t.me/{temp.U_NAME}?start=all_{query.message.chat.id}_{key}')),
             InlineKeyboardButton("🔍 ǫᴜᴀʟɪᴛʏ", callback_data=f"quality#{key}#{req}#{l_offset}")]
@@ -350,7 +350,7 @@ async def quality_search(client: Client, query: CallbackQuery):
         ]
             for file in files
         ]
-    if settings['shortlink']:
+    if settings['shortlink'] and not await is_premium(query.from_user.id, client):
         btn.insert(0,
             [InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", url=await get_shortlink(settings['url'], settings['api'], f'https://t.me/{temp.U_NAME}?start=all_{query.message.chat.id}_{key}'))]
         )
@@ -401,7 +401,7 @@ async def quality_next_page(bot, query):
         ]
             for file in files
         ]
-    if settings['shortlink']:
+    if settings['shortlink'] and not await is_premium(query.from_user.id, bot):
         btn.insert(0,
             [InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", url=await get_shortlink(settings['url'], settings['api'], f'https://t.me/{temp.U_NAME}?start=all_{query.message.chat.id}_{key}'))]
         )
@@ -485,16 +485,22 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
     elif query.data.startswith("get_del_file"):
         ident, group_id, file_id = query.data.split("#")
+        if not await is_premium(query.from_user.id, client):
+            return await query.answer(f"Only for premium users, use /plan for details", show_alert=True)
         await query.answer(url=f"https://t.me/{temp.U_NAME}?start=file_{group_id}_{file_id}")
         await query.message.delete()
 
     elif query.data.startswith("get_del_send_all_files"):
         ident, group_id, key = query.data.split("#")
+        if not await is_premium(query.from_user.id, client):
+            return await query.answer(f"Only for premium users, use /plan for details", show_alert=True)
         await query.answer(url=f"https://t.me/{temp.U_NAME}?start=all_{group_id}_{key}")
         await query.message.delete()
         
     elif query.data.startswith("stream"):
         file_id = query.data.split('#', 1)[1]
+        if not await is_premium(query.from_user.id, client):
+            return await query.answer(f"Only for premium users, use /plan for details", show_alert=True)
         msg = await client.send_cached_media(chat_id=BIN_CHANNEL, file_id=file_id)
         watch = f"{URL}watch/{msg.id}"
         download = f"{URL}download/{msg.id}"
@@ -529,6 +535,18 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
     elif query.data == "instructions":
         await query.answer("Movie request format.\nExample:\nBlack Adam or Black Adam 2022\n\nTV Reries request format.\nExample:\nLoki S01E01 or Loki S01 E01\n\nDon't use symbols.", show_alert=True)
+
+    elif query.data == 'activate_trial':
+        mp = db.get_plan(query.from_user.id)
+        if mp['trial']:
+            return await query.message.edit('You already used trial, use /plan to activate plan')
+        ex = datetime.now() + timedelta(hours=1)
+        mp['expire'] = ex
+        mp['trial'] = True
+        mp['plan'] = '1 hour'
+        mp['premium'] = True
+        db.update_plan(query.from_user.id, mp)
+        await query.message.edit(f"Congratulations! Your activated trial for 1 hour\nExpire: {ex.strftime('%Y.%m.%d %H:%M:%S')}")
 
     elif query.data == "start":
         buttons = [[
@@ -857,7 +875,7 @@ async def auto_filter(client, msg, s, spoll=False):
             for file in files
         ]   
     if offset != "":
-        if settings['shortlink']:
+        if settings['shortlink'] and not await is_premium(message.from_user.id, client):
             btn.insert(0,
                 [InlineKeyboardButton("📰 ʟᴀɴɢᴜᴀɢᴇs", callback_data=f"languages#{key}#{req}#{offset}"),
                 InlineKeyboardButton("🔍 ǫᴜᴀʟɪᴛʏ", callback_data=f"quality#{key}#{req}#{offset}")]
@@ -878,7 +896,7 @@ async def auto_filter(client, msg, s, spoll=False):
              InlineKeyboardButton(text="ɴᴇxᴛ »", callback_data=f"next_{req}_{key}_{offset}")]
         )
     else:
-        if settings['shortlink']:
+        if settings['shortlink'] and not await is_premium(message.from_user.id, client):
             btn.insert(0,
                 [InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", url=await get_shortlink(settings['url'], settings['api'], f'https://t.me/{temp.U_NAME}?start=all_{message.chat.id}_{key}'))]
             )

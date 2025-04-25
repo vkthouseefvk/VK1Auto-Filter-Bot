@@ -9,8 +9,9 @@ from hydrogram import Client, filters, enums
 from hydrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.ia_filterdb import db_count_documents, second_db_count_documents, get_file_details, delete_files
 from database.users_chats_db import db
+from datetime import datetime, timedelta
 from info import SECOND_FILES_DATABASE_URL, TIME_ZONE, FORCE_SUB_CHANNELS, STICKERS, INDEX_CHANNELS, ADMINS, IS_VERIFY, VERIFY_TUTORIAL, VERIFY_EXPIRE, SHORTLINK_API, SHORTLINK_URL, DELETE_TIME, SUPPORT_LINK, UPDATES_LINK, LOG_CHANNEL, PICS, IS_STREAM, REACTIONS, PM_FILE_DELETE_TIME
-from utils import upload_image, get_settings, get_size, is_subscribed, is_check_admin, get_shortlink, get_verify_status, update_verify_status, save_group_settings, temp, get_readable_time, get_wish, get_seconds
+from utils import is_premium, upload_image, get_settings, get_size, is_subscribed, is_check_admin, get_shortlink, get_verify_status, update_verify_status, save_group_settings, temp, get_readable_time, get_wish, get_seconds
 
 async def del_stk(s):
     await asyncio.sleep(3)
@@ -102,7 +103,7 @@ async def start(client, message):
         return
     
     verify_status = await get_verify_status(message.from_user.id)
-    if IS_VERIFY and not verify_status['is_verified']:
+    if IS_VERIFY and not verify_status['is_verified'] and not await is_premium(message.from_user.id, client):
         token = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
         await update_verify_status(message.from_user.id, verify_token=token, link="" if mc == 'inline_verify' else mc)
         link = await get_shortlink(SHORTLINK_URL, SHORTLINK_API, f'https://t.me/{temp.U_NAME}?start=verify_{token}')
@@ -188,7 +189,7 @@ async def start(client, message):
         return await message.reply('No Such File Exist!')
     files = files_
     settings = await get_settings(int(grp_id))
-    if type_ != 'shortlink' and settings['shortlink']:
+    if type_ != 'shortlink' and settings['shortlink'] and not await is_premium(message.from_user.id, client):
         link = await get_shortlink(settings['url'], settings['api'], f"https://t.me/{temp.U_NAME}?start=shortlink_{grp_id}_{file_id}")
         btn = [[
             InlineKeyboardButton("♻️ Get File ♻️", url=link)
@@ -551,3 +552,51 @@ async def remove_fsub(client, message):
     await save_group_settings(grp_id, 'fsub', FORCE_SUB_CHANNELS)
     await message.reply_text("<b>Successfully removed your force channel id...</b>")
 
+
+@Client.on_message(filters.command('myplan') & filters.private)
+async def myplan(client, message):
+    mp = db.get_plan(message.from_user.id)
+    if not await is_premium(message.from_user.id, client):
+        btn = [[
+            InlineKeyboardButton('Activate Trial', callback_data='activate_trial')
+        ]]
+        return await message.reply('You dont have any premium plan, please use /plan to activate plan', reply_markup=InlineKeyboardMarkup(btn))
+    await message.reply(f"You activated {mp['plan']} plan\nExpire: {mp['expire'].strftime('%Y.%m.%d %H:%M:%S')}")
+
+
+@Client.on_message(filters.command('plan') & filters.private)
+async def plan(client, message):
+    btn = [[
+        InlineKeyboardButton('Activate Trial', callback_data='activate_trial')
+    ]]
+    await message.reply(script.PLAN_TXT, reply_markup=InlineKeyboardMarkup(btn), disable_web_page_preview=True)
+
+
+@Client.on_message(filters.command('add_prm') & filters.user(ADMINS))
+async def add_prm(bot, message):
+    try:
+        _, user_id, d = message.text.split(' ')
+    except:
+        return await message.reply('Usage: /add_prm user_id 1d')
+    try:
+        d = int(d[:-1])
+    except:
+        return await message.reply('Not valid days, use: 1d, 7d, 30d, 365d, etc...')
+    try:
+        user = await bot.get_users(user_id)
+    except Exception as e:
+        return await message.reply(f'Error: {e}')
+    if not await is_premium(user.id, bot):
+        mp = db.get_plan(user.id)
+        ex = datetime.now() + timedelta(days=d)
+        mp['expire'] = ex
+        mp['plan'] = f'{d} days'
+        mp['premium'] = True
+        db.update_plan(user.id, mp)
+        await message.reply(f"Given premium to {user.mention}\nExpire: {ex.strftime('%Y.%m.%d %H:%M:%S')}")
+        try:
+            await bot.send_message(user.id, f"Your now premium user\nExpire: {ex.strftime('%Y.%m.%d %H:%M:%S')}")
+        except:
+            pass
+    else:
+        await message.reply(f"{user.mention} is already premium user")

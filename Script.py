@@ -112,6 +112,22 @@ I can't find the <b>{}</b> in my database! 🥲
 /invite_link - to generate invite link
 /index - to index bot accessible channels</b>"""
     
+    PLAN_TXT = """Activate any premium plan to get exclusive features.
+
+You can request any premium plan from my admins, then you can pay that amount and get exclusive features.
+
+Basic premium features:
+Ad free experience
+Online watch and fast download
+No need joind channels
+No need verify
+No shortlink
+Admins support
+And more...
+
+Admins:
+@Hansaka_Anuhas"""
+
     USER_COMMAND_TXT = """<b>Here is bot user commands 👇
 
 /start - to check bot alive or not

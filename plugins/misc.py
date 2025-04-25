@@ -99,9 +99,7 @@ async def who_is(client, message):
     if message.chat.type in [enums.ChatType.SUPERGROUP, enums.ChatType.GROUP]:
         try:
             chat_member_p = await message.chat.get_member(from_user.id)
-            joined_date = (
-                chat_member_p.joined_date or datetime.now()
-            ).strftime("%Y.%m.%d %H:%M:%S")
+            joined_date = chat_member_p.joined_date.strftime('%Y.%m.%d %H:%M:%S') if chat_member_p.joined_date else 'Not found'
             message_out_str += (
                 "<b>➲Joined this Chat on:</b> <code>"
                 f"{joined_date}"

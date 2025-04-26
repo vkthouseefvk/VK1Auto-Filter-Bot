@@ -63,6 +63,8 @@ async def start(client, message):
             InlineKeyboardButton('📚 ᴀʙᴏᴜᴛ', callback_data='about')
         ],[
             InlineKeyboardButton('💰 ᴇᴀʀɴ ᴜɴʟɪᴍɪᴛᴇᴅ ᴍᴏɴᴇʏ ʙʏ ʙᴏᴛ 💰', callback_data='earn')
+        ],[
+            InlineKeyboardButton('🤑 Buy Premium', url=f"https://t.me/{temp.U_NAME}?start=premium")
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_photo(
@@ -75,6 +77,9 @@ async def start(client, message):
 
     mc = message.command[1]
 
+    if mc == 'premium':
+        return await plan(client, message)
+    
     if mc.startswith('inline_fsub'):
         btn = await is_subscribed(client, message)
         if btn:

@@ -27,6 +27,10 @@
 - [x] 𝐴𝑢𝑡𝑜 𝐷𝑒𝑙𝑒𝑡𝑒
 - [x] 𝐴𝑛𝑑 𝑀𝑜𝑟𝑒...
 
+## Demo Bot
+* [Try this bot](https://t.me/HA_Auto_Filter_Test_Bot)
+* Here bot you can test features and more before deploy your own bot
+
 ## 𝐶𝑜𝑚𝑚𝑎𝑛𝑑𝑠
 ```
 • /start - to check bot alive or not.
@@ -153,7 +157,9 @@ sudo docker logs Auto-Filter-Bot
 * [![EvaMaria](https://img.shields.io/static/v1?label=EvaMaria&message=Developers&color=critical)](https://t.me/TeamEvamaria)
 * [![Hansaka](https://img.shields.io/static/v1?label=Hansaka&message=TG&color=critical)](https://t.me/Hansaka_Anuhas)
 
-## Buy me a coffee
+## Donate
+* If you feel like showing your appreciation for this project, then how about buying me a coffee.
+
 <a href="https://www.buymeacoffee.com/hansakaanuhas" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
 ## Thanks To

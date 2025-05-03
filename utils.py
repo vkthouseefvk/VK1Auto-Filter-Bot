@@ -4,7 +4,6 @@ from imdb import Cinemagoer
 import asyncio
 from hydrogram.types import InlineKeyboardButton
 from hydrogram import enums
-import pytz
 import re
 from datetime import datetime
 from database.users_chats_db import db

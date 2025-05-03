@@ -1,5 +1,5 @@
 from hydrogram.errors import UserNotParticipant, FloodWait
-from info import LONG_IMDB_DESCRIPTION, TIME_ZONE, FORCE_SUB_CHANNELS, REQUEST_FORCE_SUB_CHANNELS
+from info import LONG_IMDB_DESCRIPTION, FORCE_SUB_CHANNELS, REQUEST_FORCE_SUB_CHANNELS
 from imdb import Cinemagoer
 import asyncio
 from hydrogram.types import InlineKeyboardButton
@@ -262,7 +262,7 @@ def get_readable_time(seconds):
     return result
 
 def get_wish():
-    time = datetime.now(TIME_ZONE)
+    time = datetime.now()
     now = time.strftime("%H")
     if now < "12":
         status = "ɢᴏᴏᴅ ᴍᴏʀɴɪɴɢ 🌞"

@@ -1,7 +1,6 @@
 hydrogram
 tgcrypto
 pymongo
-pytz
 cinemagoer
 shortzy
 aiohttp

@@ -10,3 +10,4 @@ speedtest-cli
 uvloop
 requests
 qrcode
+Pillow

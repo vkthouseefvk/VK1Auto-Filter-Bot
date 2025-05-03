@@ -16,7 +16,10 @@ try:
     collection.create_index([("file_name", TEXT)])
 except OperationFailure as e:
     if 'quota' in str(e).lower():
-        logger.error(f'your FILES_DATABASE_URL is already full, add SECOND_FILES_DATABASE_URL')
+        if not SECOND_FILES_DATABASE_URL:
+            logger.error(f'your FILES_DATABASE_URL is already full, add SECOND_FILES_DATABASE_URL')
+        else:
+            logger.info('FILES_DATABASE_URL is full, now using SECOND_FILES_DATABASE_URL')
     else:
         logger.exception(e)
 

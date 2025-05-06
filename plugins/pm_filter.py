@@ -966,6 +966,26 @@ async def cb_handler(client: Client, query: CallbackQuery):
         chat = await client.get_chat(int(grp_id))
         await query.message.edit(text=f"Change your settings for <b>'{chat.title}'</b> as your wish. ⚙", reply_markup=InlineKeyboardMarkup(btn))
 
+    elif query.data == "open_group_settings":
+        userid = query.from_user.id if query.from_user else None
+        if not await is_check_admin(client, query.message.chat.id, userid):
+            return await query.answer("You not admin in this group.", show_alert=True)
+        btn = await get_grp_stg(query.message.chat.id)
+        await query.message.edit(text=f"Change your settings for <b>'{query.message.chat.title}'</b> as your wish. ⚙", reply_markup=InlineKeyboardMarkup(btn))
+
+    elif query.data == "open_pm_settings":
+        userid = query.from_user.id if query.from_user else None
+        if not await is_check_admin(client, query.message.chat.id, userid):
+            return await query.answer("You not admin in this group.", show_alert=True)
+        btn = await get_grp_stg(query.message.chat.id)
+        try:
+            await client.send_message(query.from_user.id, f"Change your settings for <b>'{query.message.chat.title}'</b> as your wish. ⚙", reply_markup=InlineKeyboardMarkup(btn))
+        except:
+            await query.answer(url=f"https://t.me/{temp.U_NAME}?start=settings_{query.message.chat.id}")
+        btn = [[
+            InlineKeyboardButton('Go To PM', url=f"https://t.me/{temp.U_NAME}")
+        ]]
+        await query.message.edit("Settings menu has been sent to PM", reply_markup=InlineKeyboardMarkup(btn))
 
     elif query.data.startswith("delete"):
         _, query_ = query.data.split("_", 1)

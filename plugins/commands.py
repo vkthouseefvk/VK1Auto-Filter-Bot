@@ -80,6 +80,15 @@ async def start(client, message):
     if mc == 'premium':
         return await plan(client, message)
     
+    if mc.startswith('settings'):
+        _, group_id = message.command[1].split("_")
+        if not await is_check_admin(client, (int(group_id)), message.from_user.id):
+            return await message.reply("You not admin in this group.")
+        btn = await get_grp_stg(int(group_id))
+        chat = await client.get_chat(int(group_id))
+        return await message.reply(f"Change your settings for <b>'{chat.title}'</b> as your wish. ⚙", reply_markup=InlineKeyboardMarkup(btn))
+
+
     if mc.startswith('inline_fsub'):
         btn = await is_subscribed(client, message)
         if btn:
@@ -336,12 +345,47 @@ async def get_grp_stg(group_id):
 @Client.on_message(filters.command('settings'))
 async def settings(client, message):
     group_id = message.chat.id
-    if message.chat.type not in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
-        return await message.reply_text("Use this command in group.") 
-    if not await is_check_admin(client, group_id, message.from_user.id):
-        return await message.reply_text('You not admin in this group.')
-    btn = await get_grp_stg(group_id)
-    await message.reply_text(text=f"Change your settings for <b>'{message.chat.title}'</b> as your wish. ⚙", reply_markup=InlineKeyboardMarkup(btn))
+    if message.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
+        if not await is_check_admin(client, group_id, message.from_user.id):
+            return await message.reply_text('You not admin in this group.')
+        btn = [[
+            InlineKeyboardButton("Open Here", callback_data='open_group_settings')
+        ],[
+            InlineKeyboardButton("Open In PM", callback_data='open_pm_settings')
+        ]]
+        await message.reply_text('Where do you want to open the settings menu?', reply_markup=InlineKeyboardMarkup(btn))
+    elif message.chat.type == enums.ChatType.PRIVATE:
+        cons = db.get_connections(message.from_user.id)
+        if not cons:
+            return await message.reply_text("No groups found! Use this command group and open in PM")
+        buttons = []
+        for con in cons:
+            try:
+                chat = await client.get_chat(con)
+                buttons.append(
+                    [InlineKeyboardButton(text=chat.title, callback_data=f'back_setgs#{chat.id}')]
+                )
+            except:
+                pass
+        await message.reply_text('Select the group whose settings you want to change.\n\nIf your group not showing here? Use this command in your group and open in PM or send <code>/connect</code> command in your group.', reply_markup=InlineKeyboardMarkup(buttons))
+
+
+@Client.on_message(filters.command('connect'))
+async def connect(client, message):
+    if message.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
+        group_id = message.chat.id
+        db.add_connect(group_id, message.from_user.id)
+        await message.reply_text('Successfully connected this group to PM, now you can manage your group using /settings inside your PM')
+    elif message.chat.type == enums.ChatType.PRIVATE:
+        if len(message.command) > 1:
+            group_id = message.command[1]
+            if not await is_check_admin(client, int(group_id), message.from_user.id):
+                return await message.reply_text('You not admin in this group.')
+            chat = await client.get_chat(int(group_id))
+            db.add_connect(int(group_id), message.from_user.id)
+            await message.reply_text(f'Successfully connected {chat.title} group to PM')
+        else:
+            await message.reply_text('Usage: /connect group_id\nor use /connect in group')
 
 
 @Client.on_message(filters.command('delete'))

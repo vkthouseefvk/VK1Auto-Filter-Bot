@@ -516,7 +516,7 @@ async def rm_prm(bot, message):
 @Client.on_message(filters.command('prm_list') & filters.user(ADMINS))
 async def prm_list(bot, message):
     tx = await message.reply('Getting list of premium users')
-    pr = [i['id'] for i in db.get_premium_users()]
+    pr = [i['id'] for i in db.get_premium_users() if i['status']['premium']]
     btn = []
     for p in pr:
         btn.append([InlineKeyboardButton(text=p, user_id=p)])

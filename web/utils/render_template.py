@@ -2,7 +2,7 @@ from info import BIN_CHANNEL, URL
 from utils import temp
 from web.utils.custom_dl import TGCustomYield
 import urllib.parse
-import aiofiles
+import aiofiles, html
 
 
 # styles from deepseek.com
@@ -226,8 +226,8 @@ async def media_watch(message_id):
     src = urllib.parse.urljoin(URL, f'download/{message_id}')
     tag = mime_type.split('/')[0].strip()
     if tag == 'video':
-        heading = 'Watch - {}'.format(file_name)
-        html = watch_tmplt.format(heading=heading, file_name=file_name, src=src)
+        heading = html.escape(f'Watch - {file_name}')
+        html_ = watch_tmplt.format(heading=heading, file_name=file_name, src=src)
     else:
-        html = '<h1>This is not streamable file</h1>'
-    return html
+        html_ = '<h1>This is not streamable file</h1>'
+    return html_

@@ -20,6 +20,8 @@ CAP = {}
 
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def pm_search(client, message):
+    if message.text.startswith("/"):
+        return
     if await is_premium(message.from_user.id, client):
         s = await message.reply(f"<b><i>⚠️ `{message.text}` searching...</i></b>")
         await auto_filter(client, message, s)

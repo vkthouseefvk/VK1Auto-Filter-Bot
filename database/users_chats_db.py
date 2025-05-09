@@ -218,6 +218,9 @@ class Database:
     def get_premium_count(self):
         return self.prm.count_documents({'status.premium': True})
     
+    def get_premium_users(self):
+        return self.prm.find({})
+    
     def add_connect(self, group_id, user_id):
         user= self.con.find_one({'_id': user_id})
         if user:

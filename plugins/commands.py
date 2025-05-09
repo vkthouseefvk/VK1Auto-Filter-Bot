@@ -511,3 +511,14 @@ async def rm_prm(bot, message):
             await bot.send_message(user.id, "Your premium plan was removed by admin")
         except:
             pass
+
+
+@Client.on_message(filters.command('prm_list') & filters.user(ADMINS))
+async def prm_list(bot, message):
+    tx = await message.reply('Getting list of premium users')
+    pr = [i['id'] for i in db.get_premium_users()]
+    btn = []
+    for p in pr:
+        btn.append([InlineKeyboardButton(text=p, user_id=p)])
+    await tx.edit_text('premium users saved in database are:', reply_markup=InlineKeyboardMarkup(btn))
+

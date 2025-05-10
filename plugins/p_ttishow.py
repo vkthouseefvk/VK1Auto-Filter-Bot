@@ -10,11 +10,8 @@ from utils import temp, get_settings
 from Script import script
 
 
-@Client.on_chat_member_updated()
+@Client.on_chat_member_updated(filters.group)
 async def welcome(bot, message):
-    if message.chat.type not in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
-        return
-    
     if message.new_chat_member and not message.old_chat_member:
         if message.new_chat_member.user.id == temp.ME:
             buttons = [[

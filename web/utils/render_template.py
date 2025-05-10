@@ -227,7 +227,7 @@ async def media_watch(message_id):
     tag = mime_type.split('/')[0].strip()
     if tag == 'video':
         heading = html.escape(f'Watch - {file_name}')
-        html_ = watch_tmplt.format(heading=heading, file_name=file_name, src=src)
+        html_ = watch_tmplt.replace('{heading}', heading).replace('{file_name}', file_name).replace('{src}', src)
     else:
         html_ = '<h1>This is not streamable file</h1>'
     return html_

@@ -2,7 +2,7 @@ import logging
 from struct import pack
 import re
 import base64
-from hydrogram.file_id import FileId
+from pyrogram.file_id import FileId
 from pymongo import MongoClient, TEXT
 from pymongo.errors import DuplicateKeyError, OperationFailure
 from info import USE_CAPTION_FILTER, FILES_DATABASE_URL, SECOND_FILES_DATABASE_URL, DATABASE_NAME, COLLECTION_NAME, MAX_BTN

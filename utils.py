@@ -1,9 +1,9 @@
-from hydrogram.errors import UserNotParticipant, FloodWait
+from pyrogram.errors import UserNotParticipant, FloodWait
 from info import LONG_IMDB_DESCRIPTION, FORCE_SUB_CHANNELS, REQUEST_FORCE_SUB_CHANNELS
 from imdb import Cinemagoer
 import asyncio
-from hydrogram.types import InlineKeyboardButton
-from hydrogram import enums
+from pyrogram.types import InlineKeyboardButton
+from pyrogram import enums
 import re
 from datetime import datetime
 from database.users_chats_db import db

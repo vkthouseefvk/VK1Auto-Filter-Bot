@@ -1,5 +1,5 @@
-pyrofork
-tgcrypto-pyrofork
+pyrogram
+tgcrypto
 pymongo
 cinemagoer
 shortzy

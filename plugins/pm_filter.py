@@ -549,7 +549,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await query.message.delete()
 
     elif query.data == "buttons":
-        await query.answer("⚠️")
+        await query.answer()
 
     elif query.data == "instructions":
         await query.answer("Movie request format.\nExample:\nBlack Adam or Black Adam 2022\n\nTV Reries request format.\nExample:\nLoki S01E01 or Loki S01 E01\n\nDon't use symbols.", show_alert=True)

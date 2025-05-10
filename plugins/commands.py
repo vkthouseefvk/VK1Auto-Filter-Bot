@@ -519,6 +519,9 @@ async def prm_list(bot, message):
     pr = [i['id'] for i in db.get_premium_users() if i['status']['premium']]
     btn = []
     for p in pr:
-        btn.append([InlineKeyboardButton(text=p, user_id=p)])
+        try:
+            btn.append([InlineKeyboardButton(text=p, user_id=p)])
+        except:
+            btn.append([InlineKeyboardButton(text=p, callback_data='buttons')])
     await tx.edit_text('premium users saved in database are:', reply_markup=InlineKeyboardMarkup(btn))
 

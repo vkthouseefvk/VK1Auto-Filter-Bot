@@ -1,17 +1,20 @@
 import random
 import os
 import sys
-from pyrogram import Client, filters, enums
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ChatJoinRequest
-from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong
+from hydrogram import Client, filters, enums
+from hydrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ChatJoinRequest
+from hydrogram.errors.exceptions.bad_request_400 import MessageTooLong
 from info import ADMINS, LOG_CHANNEL, PICS, SUPPORT_LINK, UPDATES_LINK, REQUEST_FORCE_SUB_CHANNELS
 from database.users_chats_db import db
 from utils import temp, get_settings
 from Script import script
 
 
-@Client.on_chat_member_updated(filters.group)
+@Client.on_chat_member_updated()
 async def welcome(bot, message):
+    if message.chat.type not in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
+        return
+    
     if message.new_chat_member and not message.old_chat_member:
         if message.new_chat_member.user.id == temp.ME:
             buttons = [[

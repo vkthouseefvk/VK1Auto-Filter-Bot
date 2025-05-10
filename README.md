@@ -157,7 +157,7 @@ sudo docker logs Auto-Filter-Bot
 <a href="https://www.buymeacoffee.com/hansakaanuhas" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
 ## Thanks To
-* [Pyrofork](https://github.com/Mayuri-Chan/pyrofork) For Telegram MTProto API Framework
+* [Hydrogram](https://github.com/hydrogram/hydrogram) For Telegram MTProto API Framework
 * [Contributors](https://github.com/HA-Bots/Auto-Filter-Bot/graphs/contributors) For free helps
 * And to everyone who helped
 

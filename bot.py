@@ -4,16 +4,16 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[logging.StreamHandler()]
 )
-logging.getLogger('pyrogram').setLevel(logging.ERROR)
+logging.getLogger('hydrogram').setLevel(logging.ERROR)
 logger = logging.getLogger(__name__)
 
 import os
 import time
 import asyncio
 import uvloop
-from pyrogram import types
-from pyrogram import Client
-from pyrogram.errors import FloodWait
+from hydrogram import types
+from hydrogram import Client
+from hydrogram.errors import FloodWait
 from aiohttp import web
 from typing import Union, Optional, AsyncGenerator
 from web import web_app
@@ -74,7 +74,7 @@ class Bot(Client):
 
     async def iter_messages(self: Client, chat_id: Union[int, str], limit: int, offset: int = 0) -> Optional[AsyncGenerator["types.Message", None]]:
         """Iterate through a chat sequentially.
-        This convenience method does the same as repeatedly calling :meth:`~pyrogram.Client.get_messages` in a loop, thus saving
+        This convenience method does the same as repeatedly calling :meth:`~hydrogram.Client.get_messages` in a loop, thus saving
         you from the hassle of setting up boilerplate code. It is useful for getting the whole chat messages with a
         single call.
         Parameters:
@@ -90,7 +90,7 @@ class Bot(Client):
                 Identifier of the first message to be returned.
                 Defaults to 0.
         Returns:
-            ``Generator``: A generator yielding :obj:`~pyrogram.types.Message` objects.
+            ``Generator``: A generator yielding :obj:`~hydrogram.types.Message` objects.
         Example:
             .. code-block:: python
                 async for message in app.iter_messages("HA_Bots", 1000, 100):

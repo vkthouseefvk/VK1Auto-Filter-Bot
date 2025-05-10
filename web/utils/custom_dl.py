@@ -1,11 +1,11 @@
 import math
 from typing import Union
-from pyrogram.types import Message
+from hydrogram.types import Message
 from utils import temp
-from pyrogram import Client, utils, raw
-from pyrogram.session import Session, Auth
-from pyrogram.errors import AuthBytesInvalid
-from pyrogram.file_id import FileId, FileType, ThumbnailSource
+from hydrogram import Client, utils, raw
+from hydrogram.session import Session, Auth
+from hydrogram.errors import AuthBytesInvalid
+from hydrogram.file_id import FileId, FileType, ThumbnailSource
 
 
 async def chunk_size(length):
@@ -31,12 +31,6 @@ class TGCustomYield:
     async def generate_file_properties(msg: Message):
         media = getattr(msg, msg.media.value, None)
         file_id_obj = FileId.decode(media.file_id)
-
-        # The below lines are added to avoid a break in routes.py
-        setattr(file_id_obj, "file_size", getattr(media, "file_size", 0))
-        setattr(file_id_obj, "mime_type", getattr(media, "mime_type", ""))
-        setattr(file_id_obj, "file_name", getattr(media, "file_name", ""))
-
         return file_id_obj
 
     async def generate_media_session(self, client: Client, msg: Message):

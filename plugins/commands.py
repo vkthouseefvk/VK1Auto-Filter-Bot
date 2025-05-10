@@ -6,8 +6,8 @@ from time import time as time_now
 from time import monotonic
 import datetime
 from Script import script
-from pyrogram import Client, filters, enums
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from hydrogram import Client, filters, enums
+from hydrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.ia_filterdb import db_count_documents, second_db_count_documents, get_file_details, delete_files
 from database.users_chats_db import db
 from datetime import datetime, timedelta
@@ -18,7 +18,7 @@ async def del_stk(s):
     await asyncio.sleep(3)
     await s.delete()
 
-@Client.on_message(filters.command("start") & filters.incoming, group=-1)
+@Client.on_message(filters.command("start") & filters.incoming)
 async def start(client, message):
     if message.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
         if not await db.get_chat(message.chat.id):

@@ -221,13 +221,12 @@ watch_tmplt = """
 
 async def media_watch(message_id):
     media_msg = await temp.BOT.get_messages(BIN_CHANNEL, message_id)
-    file_properties = await TGCustomYield().generate_file_properties(media_msg)
-    file_name, mime_type = file_properties.file_name, file_properties.mime_type
+    media = getattr(media_msg, media_msg.media.value, None)
     src = urllib.parse.urljoin(URL, f'download/{message_id}')
-    tag = mime_type.split('/')[0].strip()
+    tag = media.mime_type.split('/')[0].strip()
     if tag == 'video':
-        heading = html.escape(f'Watch - {file_name}')
-        html_ = watch_tmplt.replace('{heading}', heading).replace('{file_name}', file_name).replace('{src}', src)
+        heading = html.escape(f'Watch - {media.file_name}')
+        html_ = watch_tmplt.replace('{heading}', heading).replace('{file_name}', media.file_name).replace('{src}', src)
     else:
         html_ = '<h1>This is not streamable file</h1>'
     return html_

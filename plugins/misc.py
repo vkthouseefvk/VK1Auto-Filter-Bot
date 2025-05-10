@@ -1,8 +1,8 @@
 from info import ADMINS
 from speedtest import Speedtest, ConfigRetrievalError, SpeedtestBestServerFailure
-from pyrogram import Client, filters, enums
-from pyrogram.errors import UserNotParticipant
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from hydrogram import Client, filters, enums
+from hydrogram.errors import UserNotParticipant
+from hydrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from utils import get_size
 from datetime import datetime
 import os

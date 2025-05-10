@@ -34,8 +34,8 @@ async def download_handler(request):
 async def media_download(request, message_id: int):
     range_header = request.headers.get('Range', 0)
     media_msg = await temp.BOT.get_messages(BIN_CHANNEL, message_id)
-    file_properties = await TGCustomYield().generate_file_properties(media_msg)
-    file_size = file_properties.file_size
+    media = getattr(media_msg, media_msg.media.value, None)
+    file_size = media.file_size
 
     if range_header:
         from_bytes, until_bytes = range_header.replace('bytes=', '').split('-')
@@ -55,9 +55,9 @@ async def media_download(request, message_id: int):
     body = TGCustomYield().yield_file(media_msg, offset, first_part_cut, last_part_cut, part_count,
                                       new_chunk_size)
 
-    file_name = file_properties.file_name if file_properties.file_name \
+    file_name = media.file_name if media.file_name \
         else f"{secrets.token_hex(2)}.jpeg"
-    mime_type = file_properties.mime_type if file_properties.mime_type \
+    mime_type = media.mime_type if media.mime_type \
         else f"{mimetypes.guess_type(file_name)}"
 
     return_resp = web.Response(

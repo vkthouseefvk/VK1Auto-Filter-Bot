@@ -104,17 +104,15 @@ I can't find the <b>{}</b> in my database! 🥲
 /pin_grp_broadcast - to send message as pin to all groups.
 /restart - to restart bot
 /leave - to leave your bot from particular group
-/unban_grp - to enable group
-/ban_grp - to disable group
-/ban_user - to ban a users from bot
-/unban_user - to unban a users from bot
 /users - to get all users details
 /chats - to get all groups
 /invite_link - to generate invite link
 /index - to index bot accessible channels
 /add_prm - to add new premium user
 /rm_prm - to add remove premium user
-/delreq - to delete join request in db (if change REQUEST_FORCE_SUB_CHANNELS then must need use this command)</b>"""
+/delreq - to delete join request in db (if change REQUEST_FORCE_SUB_CHANNELS using /set_req_fsub then must need use this command)
+/set_req_fsub - to set request force subscribe channel
+/set_fsub - to set force subscribe channels</b>"""
     
     PLAN_TXT = """Activate any premium plan to get exclusive features.
 

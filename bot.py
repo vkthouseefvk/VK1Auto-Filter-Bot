@@ -17,7 +17,7 @@ from hydrogram.errors import FloodWait
 from aiohttp import web
 from typing import Union, Optional, AsyncGenerator
 from web import web_app
-from info import INDEX_CHANNELS, FORCE_SUB_CHANNELS, SUPPORT_GROUP, LOG_CHANNEL, API_ID, DATA_DATABASE_URL, API_HASH, BOT_TOKEN, PORT, BIN_CHANNEL, ADMINS, SECOND_FILES_DATABASE_URL, FILES_DATABASE_URL
+from info import INDEX_CHANNELS, SUPPORT_GROUP, LOG_CHANNEL, API_ID, DATA_DATABASE_URL, API_HASH, BOT_TOKEN, PORT, BIN_CHANNEL, ADMINS, SECOND_FILES_DATABASE_URL, FILES_DATABASE_URL
 from utils import temp, get_readable_time
 from database.users_chats_db import db
 from pymongo.mongo_client import MongoClient

@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-from info import ADMINS, DATABASE_NAME, DATA_DATABASE_URL, FILES_DATABASE_URL, SECOND_FILES_DATABASE_URL, FORCE_SUB_CHANNELS, IMDB_TEMPLATE, WELCOME_TEXT, LINK_MODE, TUTORIAL, SHORTLINK_URL, SHORTLINK_API, SHORTLINK, FILE_CAPTION, IMDB, WELCOME, SPELL_CHECK, PROTECT_CONTENT, AUTO_FILTER, AUTO_DELETE, IS_STREAM, VERIFY_EXPIRE
+from info import ADMINS, DATABASE_NAME, DATA_DATABASE_URL, FILES_DATABASE_URL, SECOND_FILES_DATABASE_URL, IMDB_TEMPLATE, WELCOME_TEXT, LINK_MODE, TUTORIAL, SHORTLINK_URL, SHORTLINK_API, SHORTLINK, FILE_CAPTION, IMDB, WELCOME, SPELL_CHECK, PROTECT_CONTENT, AUTO_FILTER, AUTO_DELETE, IS_STREAM, VERIFY_EXPIRE
 import time
 from datetime import datetime
 
@@ -52,6 +52,7 @@ class Database:
         self.prm = data_db.Premiums
         self.req = data_db.Requests
         self.con = data_db.Connections
+        self.stg = data_db.Settings
 
     def new_user(self, id, name):
         return dict(
@@ -235,5 +236,14 @@ class Database:
             return user["group_ids"]
         else:
             return []
+        
+    def update_bot_sttgs(self, var, val):
+        if not self.stg.find_one({'id': 'settings'}):
+            self.stg.insert_one({'id': 'settings', var: val})
+        self.stg.update_one({'id': 'settings'}, {'$set': {var: val}})
+
+    def get_bot_sttgs(self):
+        return self.stg.find_one({'id': 'settings'})
+
 
 db = Database()

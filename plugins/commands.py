@@ -11,7 +11,7 @@ from hydrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.ia_filterdb import db_count_documents, second_db_count_documents, get_file_details, delete_files
 from database.users_chats_db import db
 from datetime import datetime, timedelta
-from info import URL, BIN_CHANNEL, SECOND_FILES_DATABASE_URL, FORCE_SUB_CHANNELS, STICKERS, INDEX_CHANNELS, ADMINS, IS_VERIFY, VERIFY_TUTORIAL, VERIFY_EXPIRE, SHORTLINK_API, SHORTLINK_URL, DELETE_TIME, SUPPORT_LINK, UPDATES_LINK, LOG_CHANNEL, PICS, IS_STREAM, REACTIONS, PM_FILE_DELETE_TIME
+from info import URL, BIN_CHANNEL, SECOND_FILES_DATABASE_URL, STICKERS, INDEX_CHANNELS, ADMINS, IS_VERIFY, VERIFY_TUTORIAL, VERIFY_EXPIRE, SHORTLINK_API, SHORTLINK_URL, DELETE_TIME, SUPPORT_LINK, UPDATES_LINK, LOG_CHANNEL, PICS, IS_STREAM, REACTIONS, PM_FILE_DELETE_TIME
 from utils import is_premium, upload_image, get_settings, get_size, is_subscribed, is_check_admin, get_shortlink, get_verify_status, update_verify_status, save_group_settings, temp, get_readable_time, get_wish, get_seconds
 
 async def del_stk(s):
@@ -62,8 +62,6 @@ async def start(client, message):
             InlineKeyboardButton('👨‍🚒 ʜᴇʟᴘ', callback_data='help'),
             InlineKeyboardButton('🔎 sᴇᴀʀᴄʜ ɪɴʟɪɴᴇ', switch_inline_query_current_chat=''),
             InlineKeyboardButton('📚 ᴀʙᴏᴜᴛ', callback_data='about')
-        ],[
-            InlineKeyboardButton('💰 ᴇᴀʀɴ ᴜɴʟɪᴍɪᴛᴇᴅ ᴍᴏɴᴇʏ ʙʏ ʙᴏᴛ 💰', callback_data='earn')
         ],[
             InlineKeyboardButton('🤑 Buy Premium', url=f"https://t.me/{temp.U_NAME}?start=premium")
         ]]
@@ -130,7 +128,6 @@ async def start(client, message):
         await message.reply("You not verified today! Kindly verify now. 🔐", reply_markup=InlineKeyboardMarkup(btn), protect_content=True)
         return
 
-    settings = await get_settings(int(mc.split("_", 2)[1]))
     btn = await is_subscribed(client, message)
     if btn:
         btn.append(
@@ -525,4 +522,36 @@ async def prm_list(bot, message):
         except:
             t += f"{p}\n"
     await tx.edit_text(t)
+
+
+@Client.on_message(filters.command('set_fsub') & filters.user(ADMINS))
+async def set_fsub(bot, message):
+    try:
+        _, ids = message.text.split(' ', 1)
+    except ValueError:
+        return await message.reply('usage: /set_fsub -100xxx -100xxx')
+    title = ""
+    for id in ids.split(' '):
+        try:
+            chat = await bot.get_chat(int(id))
+            title += f'{chat.title}\n'
+        except Exception as e:
+            return await message.reply(f'ERROR: {e}')
+    db.update_bot_sttgs('FORCE_SUB_CHANNELS', ids)
+    await message.reply(f'added force subscribe channels: {title}')
+
+        
+
+@Client.on_message(filters.command('set_req_fsub') & filters.user(ADMINS))
+async def set_req_fsub(bot, message):
+    try:
+        _, id = message.text.split(' ', 1)
+    except ValueError:
+        return await message.reply('usage: /set_req_fsub -100xxx')
+    try:
+        chat = await bot.get_chat(int(id))
+    except Exception as e:
+        return await message.reply(f'ERROR: {e}')
+    db.update_bot_sttgs('REQUEST_FORCE_SUB_CHANNELS', id)
+    await message.reply(f'added request force subscribe channel: {chat.title}')
 

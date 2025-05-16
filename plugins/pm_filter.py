@@ -620,8 +620,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         reply_markup = InlineKeyboardMarkup(buttons)
         await query.edit_message_media(
             InputMediaPhoto(random.choice(PICS), caption=script.START_TXT.format(query.from_user.mention, get_wish())),
-            reply_markup=reply_markup,
-            parse_mode=enums.ParseMode.HTML
+            reply_markup=reply_markup
         )
         
     elif query.data == "about":
@@ -636,8 +635,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         reply_markup = InlineKeyboardMarkup(buttons)
         await query.edit_message_media(
             InputMediaPhoto(random.choice(PICS), caption=script.MY_ABOUT_TXT),
-            reply_markup=reply_markup,
-            parse_mode=enums.ParseMode.HTML
+            reply_markup=reply_markup
         )
 
     elif query.data == "stats":
@@ -681,8 +679,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         reply_markup = InlineKeyboardMarkup(buttons)
         await query.edit_message_media(
             InputMediaPhoto(random.choice(PICS), caption=script.MY_OWNER_TXT),
-            reply_markup=reply_markup,
-            parse_mode=enums.ParseMode.HTML
+            reply_markup=reply_markup
         )
         
     elif query.data == "help":
@@ -727,8 +724,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         reply_markup = InlineKeyboardMarkup(buttons)
         await query.edit_message_media(
             InputMediaPhoto(random.choice(PICS), caption=script.SOURCE_TXT),
-            reply_markup=reply_markup,
-            parse_mode=enums.ParseMode.HTML
+            reply_markup=reply_markup
         )
   
     elif query.data.startswith("bool_setgs"):

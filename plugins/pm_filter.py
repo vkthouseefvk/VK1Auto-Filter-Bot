@@ -555,25 +555,31 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await query.answer("Movie request format.\nExample:\nBlack Adam or Black Adam 2022\n\nTV Reries request format.\nExample:\nLoki S01E01 or Loki S01 E01\n\nDon't use symbols.", show_alert=True)
 
     elif query.data == 'activate_trial':
+        btn = [[
+            InlineKeyboardButton('« ʙᴀᴄᴋ', callback_data='premium')
+        ]]
         mp = db.get_plan(query.from_user.id)
         if mp['trial']:
-            return await query.message.edit('You already used trial, use /plan to activate plan')
+            return await query.message.edit('You already used trial, use /plan to activate plan', reply_markup=InlineKeyboardMarkup(btn))
         ex = datetime.now() + timedelta(hours=1)
         mp['expire'] = ex
         mp['trial'] = True
         mp['plan'] = '1 hour'
         mp['premium'] = True
         db.update_plan(query.from_user.id, mp)
-        await query.message.edit(f"Congratulations! Your activated trial for 1 hour\nExpire: {ex.strftime('%Y.%m.%d %H:%M:%S')}")
+        await query.message.edit(f"Congratulations! Your activated trial for 1 hour\nExpire: {ex.strftime('%Y.%m.%d %H:%M:%S')}", reply_markup=InlineKeyboardMarkup(btn))
 
     elif query.data == 'activate_plan':
+        btn = [[
+            InlineKeyboardButton('« ʙᴀᴄᴋ', callback_data='premium')
+        ]]
         q = await query.message.edit('How many days you need premium plan?\nSend days as number')
         msg = await client.listen(chat_id=query.message.chat.id, user_id=query.from_user.id)
         try:
             d = int(msg.text)
         except:
             await q.delete()
-            return await query.message.reply('Invalid number\nIf you want 7 days then send 7 only')
+            return await query.message.reply('Invalid number\nIf you want 7 days then send 7 only', reply_markup=InlineKeyboardMarkup(btn))
         transaction_note = f'{d} days premium plan for {query.from_user.id}'
         amount = d * PRE_DAY_AMOUNT
         upi_uri = f"upi://pay?pa={UPI_ID}&pn={UPI_NAME}&am={amount}&cu=INR&tn={transaction_note}"
@@ -587,14 +593,14 @@ async def cb_handler(client: Client, query: CallbackQuery):
             msg = await client.listen(chat_id=query.message.chat.id, user_id=query.from_user.id, timeout=600)
         except ListenerTimeout:
             await q.delete()
-            return await query.message.reply(f'Your time is over, send your receipt to: {RECEIPT_SEND_USERNAME}')
+            return await query.message.reply(f'Your time is over, send your receipt to: {RECEIPT_SEND_USERNAME}', reply_markup=InlineKeyboardMarkup(btn))
         if msg.photo:
             await q.delete()
-            await query.message.reply(f'Your receipt was sent, wait some time\nSupport: {RECEIPT_SEND_USERNAME}')
+            await query.message.reply(f'Your receipt was sent, wait some time\nSupport: {RECEIPT_SEND_USERNAME}', reply_markup=InlineKeyboardMarkup(btn))
             await client.send_photo(RECEIPT_SEND_USERNAME, msg.photo.file_id, transaction_note)
         else:
             await q.delete()
-            await query.message.reply(f"Not valid photo, send your receipt to: {RECEIPT_SEND_USERNAME}")
+            await query.message.reply(f"Not valid photo, send your receipt to: {RECEIPT_SEND_USERNAME}", reply_markup=InlineKeyboardMarkup(btn))
 
 
 
@@ -684,7 +690,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await query.message.edit_text(
-            text=script.HELP_TXT(query.from_user.mention),
+            text=script.HELP_TXT.format(query.from_user.mention),
             reply_markup=reply_markup
         )
 

@@ -1,5 +1,5 @@
 from hydrogram.errors import UserNotParticipant, FloodWait
-from info import LONG_IMDB_DESCRIPTION
+from info import LONG_IMDB_DESCRIPTION, ADMINS, IS_PREMIUM
 from imdb import Cinemagoer
 import asyncio
 from hydrogram.types import InlineKeyboardButton
@@ -173,6 +173,10 @@ async def update_verify_status(user_id, verify_token="", is_verified=False, link
 
     
 async def is_premium(user_id, bot):
+    if not IS_PREMIUM:
+        return True
+    if user_id in ADMINS:
+        return True
     mp = db.get_plan(user_id)
     if mp['premium']:
         if mp['expire'] < datetime.now():

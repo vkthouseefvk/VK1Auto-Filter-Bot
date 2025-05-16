@@ -441,7 +441,7 @@ async def myplan(client, message):
             InlineKeyboardButton('Activate Trial', callback_data='activate_trial'),
             InlineKeyboardButton('Activate Plan', callback_data='activate_plan')
         ]]
-        return await message.reply_photo(photo=random.choice(PICS), caption='You dont have any premium plan, please use /plan to activate plan', reply_markup=InlineKeyboardMarkup(btn))
+        return await message.reply('You dont have any premium plan, please use /plan to activate plan', reply_markup=InlineKeyboardMarkup(btn))
     await message.reply(f"You activated {mp['plan']} plan\nExpire: {mp['expire'].strftime('%Y.%m.%d %H:%M:%S')}")
 
 
@@ -452,7 +452,7 @@ async def plan(client, message):
     ],[
         InlineKeyboardButton('Activate Plan', callback_data='activate_plan')
     ]]
-    await message.reply_photo(photo=random.choice(PICS), caption=script.PLAN_TXT.format(PRE_DAY_AMOUNT, RECEIPT_SEND_USERNAME), reply_markup=InlineKeyboardMarkup(btn))
+    await message.reply(script.PLAN_TXT.format(PRE_DAY_AMOUNT, RECEIPT_SEND_USERNAME), reply_markup=InlineKeyboardMarkup(btn))
 
 
 @Client.on_message(filters.command('add_prm') & filters.user(ADMINS))
@@ -469,6 +469,8 @@ async def add_prm(bot, message):
         user = await bot.get_users(user_id)
     except Exception as e:
         return await message.reply(f'Error: {e}')
+    if user.id in ADMINS:
+        return await message.reply('ADMINS is already premium')
     if not await is_premium(user.id, bot):
         mp = db.get_plan(user.id)
         ex = datetime.now() + timedelta(days=d)
@@ -496,6 +498,8 @@ async def rm_prm(bot, message):
         user = await bot.get_users(user_id)
     except Exception as e:
         return await message.reply(f'Error: {e}')
+    if user.id in ADMINS:
+        return await message.reply('ADMINS is already premium')
     if not await is_premium(user.id, bot):
         await message.reply(f"{user.mention} is not premium user")
     else:

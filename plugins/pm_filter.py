@@ -2,12 +2,12 @@ import asyncio
 import re
 from time import time as time_now
 import math, os
-import qrcode
+import qrcode, random
 from hydrogram.errors import ListenerTimeout
 from hydrogram.errors.exceptions.bad_request_400 import MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
 from Script import script
 from datetime import datetime, timedelta
-from info import PM_SEARCH, TUTORIAL, SHORTLINK_API, SHORTLINK_URL, RECEIPT_SEND_USERNAME, UPI_ID, UPI_NAME, PRE_DAY_AMOUNT, SECOND_FILES_DATABASE_URL, ADMINS, URL, MAX_BTN, BIN_CHANNEL, IS_STREAM, DELETE_TIME, FILMS_LINK, LOG_CHANNEL, SUPPORT_GROUP, SUPPORT_LINK, UPDATES_LINK, LANGUAGES, QUALITY
+from info import PICS, PM_SEARCH, TUTORIAL, SHORTLINK_API, SHORTLINK_URL, RECEIPT_SEND_USERNAME, UPI_ID, UPI_NAME, PRE_DAY_AMOUNT, SECOND_FILES_DATABASE_URL, ADMINS, URL, MAX_BTN, BIN_CHANNEL, IS_STREAM, DELETE_TIME, FILMS_LINK, LOG_CHANNEL, SUPPORT_GROUP, SUPPORT_LINK, UPDATES_LINK, LANGUAGES, QUALITY
 from hydrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, InputMediaPhoto
 from hydrogram import Client, filters, enums
 from utils import is_premium, get_size, is_subscribed, is_check_admin, get_wish, get_shortlink, get_readable_time, get_poster, temp, get_settings, save_group_settings
@@ -618,8 +618,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InlineKeyboardButton('🤑 Buy Premium', callback_data='premium')
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
-        await query.message.edit_text(
-            text=script.START_TXT.format(query.from_user.mention, get_wish()),
+        await query.edit_message_media(
+            InputMediaPhoto(random.choice(PICS), caption=script.START_TXT.format(query.from_user.mention, get_wish())),
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
@@ -634,8 +634,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InlineKeyboardButton('« ʙᴀᴄᴋ', callback_data='start')
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
-        await query.message.edit_text(
-            text=script.MY_ABOUT_TXT,
+        await query.edit_message_media(
+            InputMediaPhoto(random.choice(PICS), caption=script.MY_ABOUT_TXT),
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
@@ -660,7 +660,9 @@ async def cb_handler(client: Client, query: CallbackQuery):
         buttons = [[
             InlineKeyboardButton('« ʙᴀᴄᴋ', callback_data='about')
         ]]
-        await query.message.edit_text(script.STATUS_TXT.format(users, prm, chats, used_data_db_size, files, used_files_db_size, secnd_files, secnd_files_db_used_size, uptime), reply_markup=InlineKeyboardMarkup(buttons)
+        await query.edit_message_media(
+            InputMediaPhoto(random.choice(PICS), caption=script.STATUS_TXT.format(users, prm, chats, used_data_db_size, files, used_files_db_size, secnd_files, secnd_files_db_used_size, uptime)),
+            reply_markup=InlineKeyboardMarkup(buttons)
         )
     
     elif query.data == 'premium':
@@ -670,13 +672,15 @@ async def cb_handler(client: Client, query: CallbackQuery):
         ],[
             InlineKeyboardButton('« ʙᴀᴄᴋ', callback_data='start')
                 ]]
-        await query.message.edit_text(script.PLAN_TXT.format(PRE_DAY_AMOUNT, RECEIPT_SEND_USERNAME), reply_markup=InlineKeyboardMarkup(btn))
+        await query.edit_message_media(
+            InputMediaPhoto(random.choice(PICS), caption=script.PLAN_TXT.format(PRE_DAY_AMOUNT, RECEIPT_SEND_USERNAME)),
+            reply_markup=InlineKeyboardMarkup(btn))
 
     elif query.data == "owner":
         buttons = [[InlineKeyboardButton('« ʙᴀᴄᴋ', callback_data='about')]]
         reply_markup = InlineKeyboardMarkup(buttons)
-        await query.message.edit_text(
-            text=script.MY_OWNER_TXT,
+        await query.edit_message_media(
+            InputMediaPhoto(random.choice(PICS), caption=script.MY_OWNER_TXT),
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )
@@ -689,8 +693,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InlineKeyboardButton('« ʙᴀᴄᴋ', callback_data='start')
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
-        await query.message.edit_text(
-            text=script.HELP_TXT.format(query.from_user.mention),
+        await query.edit_message_media(
+            InputMediaPhoto(random.choice(PICS), caption=script.HELP_TXT.format(query.from_user.mention)),
             reply_markup=reply_markup
         )
 
@@ -699,8 +703,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InlineKeyboardButton('« ʙᴀᴄᴋ', callback_data='help')
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
-        await query.message.edit_text(
-            text=script.USER_COMMAND_TXT,
+        await query.edit_message_media(
+            InputMediaPhoto(random.choice(PICS), caption=script.USER_COMMAND_TXT),
             reply_markup=reply_markup
         )
         
@@ -711,8 +715,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InlineKeyboardButton('« ʙᴀᴄᴋ', callback_data='help')
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
-        await query.message.edit_text(
-            text=script.ADMIN_COMMAND_TXT,
+        await query.edit_message_media(
+            InputMediaPhoto(random.choice(PICS), caption=script.ADMIN_COMMAND_TXT),
             reply_markup=reply_markup
         )
 
@@ -721,8 +725,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InlineKeyboardButton('≼ ʙᴀᴄᴋ', callback_data='about')
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
-        await query.message.edit_text(
-            text=script.SOURCE_TXT,
+        await query.edit_message_media(
+            InputMediaPhoto(random.choice(PICS), caption=script.SOURCE_TXT),
             reply_markup=reply_markup,
             parse_mode=enums.ParseMode.HTML
         )

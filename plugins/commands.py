@@ -452,7 +452,7 @@ async def plan(client, message):
     ],[
         InlineKeyboardButton('Activate Plan', callback_data='activate_plan')
     ]]
-    await message.reply_photo(random.choice(PICS), script.PLAN_TXT.format(PRE_DAY_AMOUNT, RECEIPT_SEND_USERNAME), reply_markup=InlineKeyboardMarkup(btn), disable_web_page_preview=True)
+    await message.reply_photo(random.choice(PICS), script.PLAN_TXT.format(PRE_DAY_AMOUNT, RECEIPT_SEND_USERNAME), reply_markup=InlineKeyboardMarkup(btn))
 
 
 @Client.on_message(filters.command('add_prm') & filters.user(ADMINS))

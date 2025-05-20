@@ -11,7 +11,7 @@ from hydrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.ia_filterdb import db_count_documents, second_db_count_documents, get_file_details, delete_files
 from database.users_chats_db import db
 from datetime import datetime, timedelta
-from info import PRE_DAY_AMOUNT, RECEIPT_SEND_USERNAME, URL, BIN_CHANNEL, SECOND_FILES_DATABASE_URL, STICKERS, INDEX_CHANNELS, ADMINS, IS_VERIFY, VERIFY_TUTORIAL, VERIFY_EXPIRE, SHORTLINK_API, SHORTLINK_URL, DELETE_TIME, SUPPORT_LINK, UPDATES_LINK, LOG_CHANNEL, PICS, IS_STREAM, REACTIONS, PM_FILE_DELETE_TIME
+from info import IS_PREMIUM, PRE_DAY_AMOUNT, RECEIPT_SEND_USERNAME, URL, BIN_CHANNEL, SECOND_FILES_DATABASE_URL, STICKERS, INDEX_CHANNELS, ADMINS, IS_VERIFY, VERIFY_TUTORIAL, VERIFY_EXPIRE, SHORTLINK_API, SHORTLINK_URL, DELETE_TIME, SUPPORT_LINK, UPDATES_LINK, LOG_CHANNEL, PICS, IS_STREAM, REACTIONS, PM_FILE_DELETE_TIME
 from utils import is_premium, upload_image, get_settings, get_size, is_subscribed, is_check_admin, get_shortlink, get_verify_status, update_verify_status, save_group_settings, temp, get_readable_time, get_wish, get_seconds
 
 async def del_stk(s):
@@ -435,6 +435,8 @@ async def ping(client, message):
 
 @Client.on_message(filters.command('myplan') & filters.private)
 async def myplan(client, message):
+    if not IS_PREMIUM:
+        return await message.reply('Premium feature was disabled by admin')
     mp = db.get_plan(message.from_user.id)
     if not await is_premium(message.from_user.id, client):
         btn = [[
@@ -447,6 +449,8 @@ async def myplan(client, message):
 
 @Client.on_message(filters.command('plan') & filters.private)
 async def plan(client, message):
+    if not IS_PREMIUM:
+        return await message.reply('Premium feature was disabled by admin')
     btn = [[
         InlineKeyboardButton('Activate Trial', callback_data='activate_trial')
     ],[
@@ -457,6 +461,8 @@ async def plan(client, message):
 
 @Client.on_message(filters.command('add_prm') & filters.user(ADMINS))
 async def add_prm(bot, message):
+    if not IS_PREMIUM:
+        return await message.reply('Premium feature was disabled')
     try:
         _, user_id, d = message.text.split(' ')
     except:
@@ -490,6 +496,8 @@ async def add_prm(bot, message):
 
 @Client.on_message(filters.command('rm_prm') & filters.user(ADMINS))
 async def rm_prm(bot, message):
+    if not IS_PREMIUM:
+        return await message.reply('Premium feature was disabled')
     try:
         _, user_id = message.text.split(' ')
     except:
@@ -517,6 +525,8 @@ async def rm_prm(bot, message):
 
 @Client.on_message(filters.command('prm_list') & filters.user(ADMINS))
 async def prm_list(bot, message):
+    if not IS_PREMIUM:
+        return await message.reply('Premium feature was disabled')
     tx = await message.reply('Getting list of premium users')
     pr = [i['id'] for i in db.get_premium_users() if i['status']['premium']]
     t = 'premium users saved in database are:\n\n'

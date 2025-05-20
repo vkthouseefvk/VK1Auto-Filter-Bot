@@ -7,7 +7,7 @@ from hydrogram.errors import ListenerTimeout
 from hydrogram.errors.exceptions.bad_request_400 import MediaEmpty, PhotoInvalidDimensions, WebpageMediaEmpty
 from Script import script
 from datetime import datetime, timedelta
-from info import PICS, PM_SEARCH, TUTORIAL, SHORTLINK_API, SHORTLINK_URL, RECEIPT_SEND_USERNAME, UPI_ID, UPI_NAME, PRE_DAY_AMOUNT, SECOND_FILES_DATABASE_URL, ADMINS, URL, MAX_BTN, BIN_CHANNEL, IS_STREAM, DELETE_TIME, FILMS_LINK, LOG_CHANNEL, SUPPORT_GROUP, SUPPORT_LINK, UPDATES_LINK, LANGUAGES, QUALITY
+from info import IS_PREMIUM, PICS, PM_SEARCH, TUTORIAL, SHORTLINK_API, SHORTLINK_URL, RECEIPT_SEND_USERNAME, UPI_ID, UPI_NAME, PRE_DAY_AMOUNT, SECOND_FILES_DATABASE_URL, ADMINS, URL, MAX_BTN, BIN_CHANNEL, IS_STREAM, DELETE_TIME, FILMS_LINK, LOG_CHANNEL, SUPPORT_GROUP, SUPPORT_LINK, UPDATES_LINK, LANGUAGES, QUALITY
 from hydrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, InputMediaPhoto
 from hydrogram import Client, filters, enums
 from utils import is_premium, get_size, is_subscribed, is_check_admin, get_wish, get_shortlink, get_readable_time, get_poster, temp, get_settings, save_group_settings
@@ -664,6 +664,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
         )
     
     elif query.data == 'premium':
+        if not IS_PREMIUM:
+            return await query.answer('Premium feature was disabled by admin', show_alert=True)
         btn = [[
             InlineKeyboardButton('Activate Trial', callback_data='activate_trial'),
             InlineKeyboardButton('Activate Plan', callback_data='activate_plan')

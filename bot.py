@@ -18,7 +18,7 @@ from aiohttp import web
 from typing import Union, Optional, AsyncGenerator
 from web import web_app
 from info import INDEX_CHANNELS, SUPPORT_GROUP, LOG_CHANNEL, API_ID, DATA_DATABASE_URL, API_HASH, BOT_TOKEN, PORT, BIN_CHANNEL, ADMINS, SECOND_FILES_DATABASE_URL, FILES_DATABASE_URL
-from utils import temp, get_readable_time
+from utils import temp, get_readable_time, check_premium
 from database.users_chats_db import db
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
@@ -61,6 +61,7 @@ class Bot(Client):
         await app.setup()
         await web.TCPSite(app, "0.0.0.0", PORT).start()
 
+        asyncio.create_task(check_premium(self))
         try:
             await self.send_message(chat_id=LOG_CHANNEL, text=f"<b>{me.mention} Restarted! 🤖</b>")
         except:

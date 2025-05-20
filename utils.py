@@ -191,6 +191,26 @@ async def is_premium(user_id, bot):
         return False
 
 
+async def check_premium(bot):
+    while True:
+        pr = [i for i in db.get_premium_users() if i['status']['premium']]
+        for p in pr:
+            mp = p['status']
+            if mp['expire'] < datetime.now():
+                try:
+                    await bot.send_message(
+                        p['id'],
+                        f"Your premium {mp['plan']} plan is expired in {mp['expire'].strftime('%Y.%m.%d %H:%M:%S')}, use /plan to activate new plan again"
+                    )
+                except Exception:
+                    pass
+                mp['expire'] = ''
+                mp['plan'] = ''
+                mp['premium'] = False
+                db.update_plan(p['id'], mp)
+        await asyncio.sleep(1200)
+
+
 async def broadcast_messages(user_id, message, pin):
     try:
         m = await message.copy(chat_id=user_id)

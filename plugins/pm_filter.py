@@ -25,7 +25,7 @@ async def pm_search(client, message):
     if not PM_SEARCH:
         return await message.reply_text('PM search was disabled!')
     if await is_premium(message.from_user.id, client):
-        s = await message.reply(f"<b><i>⚠️ `{message.text}` searching...</i></b>")
+        s = await message.reply(f"<b><i>⚠️ `{message.text}` searching...</i></b>", quote=True)
         await auto_filter(client, message, s)
     else:
         files, n_offset, total = await get_search_results(message.text)

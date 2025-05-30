@@ -58,16 +58,16 @@ async def group_search(client, message):
                 ]]
                 await message.reply_text(f'Total {total} results found in this group', reply_markup=InlineKeyboardMarkup(btn))
             return
-            
+
         if message.text.startswith("/"):
             return
-        
+
         elif '#request' in message.text.lower():
             if message.from_user.id in ADMINS:
                 return
             await client.send_message(LOG_CHANNEL, f"#Request\n★ User: {message.from_user.mention}\n★ Group: {message.chat.title}\n\n★ Message: {re.sub(r'#request', '', message.text.lower())}")
             await message.reply_text("Request sent!")
-            return  
+            return
         else:
             s = await message.reply(f"<b><i>⚠️ `{message.text}` searching...</i></b>")
             # Get distinct titles first
@@ -146,7 +146,7 @@ async def next_page(bot, query):
         off_set = None
     else:
         off_set = offset - MAX_BTN
-        
+
     if n_offset == 0:
         btn.append(
             [InlineKeyboardButton("« ʙᴀᴄᴋ", callback_data=f"next_{req}_{key}_{off_set}"),
@@ -179,7 +179,7 @@ async def languages_(client: Client, query: CallbackQuery):
          InlineKeyboardButton(text=LANGUAGES[i+1].title(), callback_data=f"lang_search#{LANGUAGES[i+1]}#{key}#{offset}#{req}")]
         for i in range(0, len(LANGUAGES)-1, 2)
     ]
-    btn.append([InlineKeyboardButton(text="⪻ ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ", callback_data=f"next_{req}_{key}_{offset}")])  
+    btn.append([InlineKeyboardButton(text="⪻ ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ", callback_data=f"next_{req}_{key}_{offset}")])
     await query.message.edit_text("<b>ɪɴ ᴡʜɪᴄʜ ʟᴀɴɢᴜᴀɢᴇ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ, sᴇʟᴇᴄᴛ ʜᴇʀᴇ 👇</b>", disable_web_page_preview=True, reply_markup=InlineKeyboardMarkup(btn))
 
 @Client.on_callback_query(filters.regex(r"^quality"))
@@ -192,7 +192,7 @@ async def quality(client: Client, query: CallbackQuery):
          InlineKeyboardButton(text=QUALITY[i+1].title(), callback_data=f"qual_search#{QUALITY[i+1]}#{key}#{offset}#{req}")]
         for i in range(0, len(QUALITY)-1, 2)
     ]
-    btn.append([InlineKeyboardButton(text="⪻ ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ", callback_data=f"next_{req}_{key}_{offset}")])  
+    btn.append([InlineKeyboardButton(text="⪻ ʙᴀᴄᴋ ᴛᴏ ᴍᴀɪɴ ᴘᴀɢᴇ", callback_data=f"next_{req}_{key}_{offset}")])
     await query.message.edit_text("<b>ɪɴ ᴡʜɪᴄʜ ǫᴜᴀʟɪᴛʏ ᴅᴏ ʏᴏᴜ ᴡᴀɴᴛ, sᴇʟᴇᴄᴛ ʜᴇʀᴇ 👇</b>", disable_web_page_preview=True, reply_markup=InlineKeyboardMarkup(btn))
 
 @Client.on_callback_query(filters.regex(r"^lang_search"))
@@ -205,7 +205,7 @@ async def filter_languages_cb_handler(client: Client, query: CallbackQuery):
     cap = CAP.get(key)
     if not search:
         await query.answer(f"Hello {query.from_user.first_name},\nSend New Request Again!", show_alert=True)
-        return 
+        return
 
     files, l_offset, total_results = await get_search_results(search, lang=lang)
     if not files:
@@ -236,7 +236,7 @@ async def filter_languages_cb_handler(client: Client, query: CallbackQuery):
             [InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", callback_data=f"send_all#{key}#{req}"),
             InlineKeyboardButton("🔍 ǫᴜᴀʟɪᴛʏ", callback_data=f"quality#{key}#{req}#{offset}")]
         )
-    
+
     if l_offset != "":
         btn.append(
             [InlineKeyboardButton(text=f"1/{math.ceil(int(total_results) / MAX_BTN)}", callback_data="buttons"),
@@ -350,7 +350,7 @@ async def quality_search(client: Client, query: CallbackQuery):
     else:
         btn.insert(0,
             [InlineKeyboardButton("♻️ sᴇɴᴅ ᴀʟʟ ♻️", callback_data=f"send_all#{key}#{req}")]
-        )  
+        )
     if l_offset != "":
         btn.append(
             [InlineKeyboardButton(text=f"1/{math.ceil(int(total_results) / MAX_BTN)}", callback_data="buttons"),
@@ -465,7 +465,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             await query.message.reply_to_message.delete()
         except:
             pass
-  
+
     if query.data.startswith("file"):
         ident, file_id = query.data.split("#")
         try:
@@ -489,7 +489,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             return await query.answer(f"Only for premium users, use /plan for details", show_alert=True)
         await query.answer(url=f"https://t.me/{temp.U_NAME}?start=all_{group_id}_{key}")
         await query.message.delete()
-        
+
     elif query.data.startswith("stream"):
         file_id = query.data.split('#', 1)[1]
         if not await is_premium(query.from_user.id, client):
@@ -507,8 +507,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await query.edit_message_reply_markup(
             reply_markup=reply_markup
         )
-    
-            
+
+
     elif query.data.startswith("checksub"):
         ident, mc = query.data.split("#")
         settings = await get_settings(int(mc.split("_", 2)[1]))
@@ -597,7 +597,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InputMediaPhoto(random.choice(PICS), caption=script.START_TXT.format(query.from_user.mention, get_wish())),
             reply_markup=reply_markup
         )
-        
+
     elif query.data == "about":
         buttons = [[
             InlineKeyboardButton('📊 sᴛᴀᴛᴜs 📊', callback_data='stats'),
@@ -637,7 +637,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InputMediaPhoto(random.choice(PICS), caption=script.STATUS_TXT.format(users, prm, chats, used_data_db_size, files, used_files_db_size, secnd_files, secnd_files_db_used_size, uptime)),
             reply_markup=InlineKeyboardMarkup(buttons)
         )
-    
+
     elif query.data == 'premium':
         if not IS_PREMIUM:
             return await query.answer('Premium feature was disabled by admin', show_alert=True)
@@ -658,7 +658,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InputMediaPhoto(random.choice(PICS), caption=script.MY_OWNER_TXT),
             reply_markup=reply_markup
         )
-        
+
     elif query.data == "help":
         buttons = [[
             InlineKeyboardButton('User Command', callback_data='user_command'),
@@ -681,7 +681,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InputMediaPhoto(random.choice(PICS), caption=script.USER_COMMAND_TXT),
             reply_markup=reply_markup
         )
-        
+
     elif query.data == "admin_command":
         if query.from_user.id not in ADMINS:
             return await query.answer("ADMINS Only!", show_alert=True)
@@ -703,7 +703,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InputMediaPhoto(random.choice(PICS), caption=script.SOURCE_TXT),
             reply_markup=reply_markup
         )
-  
+
     elif query.data.startswith("bool_setgs"):
         ident, set_type, status, grp_id = query.data.split("#")
         userid = query.from_user.id if query.from_user else None
@@ -718,7 +718,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
         btn = await get_grp_stg(int(grp_id))
         await query.message.edit_reply_markup(InlineKeyboardMarkup(btn))
-            
+
     elif query.data.startswith("imdb_setgs"):
         _, grp_id = query.data.split("#")
         userid = query.from_user.id if query.from_user else None
@@ -799,7 +799,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         ]]
         await query.message.edit('Successfully changed Welcome to default', reply_markup=InlineKeyboardMarkup(btn))
 
-    
+
     elif query.data.startswith("tutorial_setgs"):
         _, grp_id = query.data.split("#")
         userid = query.from_user.id if query.from_user else None
@@ -814,7 +814,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InlineKeyboardButton('Back', callback_data=f'back_setgs#{grp_id}')
         ]]
         await query.message.edit(f'Select you want option\n\nCurrent tutorial link:\n{settings["tutorial"]}', reply_markup=InlineKeyboardMarkup(btn), disable_web_page_preview=True)
-        
+
     elif query.data.startswith("set_tutorial"):
         _, grp_id = query.data.split("#")
         userid = query.from_user.id if query.from_user else None
@@ -840,7 +840,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         ]]
         await query.message.edit('Successfully changed tutorial link to default', reply_markup=InlineKeyboardMarkup(btn))
 
-    
+
     elif query.data.startswith("shortlink_setgs"):
         _, grp_id = query.data.split("#")
         userid = query.from_user.id if query.from_user else None
@@ -855,7 +855,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InlineKeyboardButton('Back', callback_data=f'back_setgs#{grp_id}')
         ]]
         await query.message.edit(f'Select you want option\n\nCurrent shortlink:\n{settings["url"]} - {settings["api"]}', reply_markup=InlineKeyboardMarkup(btn))
-        
+
     elif query.data.startswith("set_shortlink"):
         _, grp_id = query.data.split("#")
         userid = query.from_user.id if query.from_user else None
@@ -900,8 +900,8 @@ async def cb_handler(client: Client, query: CallbackQuery):
             InlineKeyboardButton('Back', callback_data=f'back_setgs#{grp_id}')
         ]]
         await query.message.edit(f'Select you want option\n\nCurrent caption:\n{settings["caption"]}', reply_markup=InlineKeyboardMarkup(btn))
-        
-        
+
+
     elif query.data.startswith("set_caption"):
         _, grp_id = query.data.split("#")
         userid = query.from_user.id if query.from_user else None
@@ -963,15 +963,15 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await query.message.edit('Deleting...')
         deleted = await delete_files(query_)
         await query.message.edit(f'Deleted {deleted} files in your database in your query {query_}')
-     
+
     elif query.data.startswith("send_all"):
         ident, key, req = query.data.split("#")
         if int(req) != query.from_user.id:
-            return await query.answer(f"Hello {query.from_user.first_name},\nDon't Click Other Results!", show_alert=True)        
+            return await query.answer(f"Hello {query.from_user.first_name},\nDon't Click Other Results!", show_alert=True)
         files = temp.FILES.get(key)
         if not files:
             await query.answer(f"Hello {query.from_user.first_name},\nSend New Request Again!", show_alert=True)
-            return        
+            return
         await query.answer(url=f"https://t.me/{temp.U_NAME}?start=all_{query.message.chat.id}_{key}")
 
     elif query.data == "unmute_all_members":
@@ -1094,7 +1094,7 @@ async def auto_filter(client, msg, s, spoll=False, title_search=None):
             InlineKeyboardButton(text=f"{get_size(file['file_size'])} - {file['file_name']}", callback_data=f'file#{file["_id"]}')
         ]
             for file in files
-        ]   
+        ]
     if offset != "":
         if settings['shortlink'] and not await is_premium(message.from_user.id, client):
             btn.insert(0,
@@ -1166,76 +1166,6 @@ async def auto_filter(client, msg, s, spoll=False, title_search=None):
         cap = f"<b>💭 ʜᴇʏ {message.from_user.mention},\n♻️ ʜᴇʀᴇ ɪ ꜰᴏᴜɴᴅ ꜰᴏʀ ʏᴏᴜʀ sᴇᴀʀᴄʜ {search}...</b>"
     CAP[key] = cap
 
-# New function to show title selection
-async def show_title_selection(client, message, titles, s):
-    btn = []
-    # Limit to 10 titles per page
-    for i, title in enumerate(titles[:10]):
-        btn.append([InlineKeyboardButton(text=f"{i+1}. {title}", callback_data=f"title#{title}")])
-    
-    if len(titles) > 10:
-        btn.append([InlineKeyboardButton(text="Next ⏩", callback_data=f"title_next_0")])
-    
-    await s.edit_text(
-        f"<b>Found {len(titles)} titles matching your search.</b>\n\n<b>Please select the exact title:</b>",
-        reply_markup=InlineKeyboardMarkup(btn)
-    )
-
-# Add new callback handler for title selection
-@Client.on_callback_query(filters.regex(r"^title"))
-async def title_callback(client, query):
-    if query.data.startswith("title#"):
-        _, title = query.data.split("#", 1)
-        s = await query.message.edit(f"<b><i>⚠️ Searching for `{title}`...</i></b>")
-        await auto_filter(client, query.message, s, title_search=title)
-    
-    elif query.data.startswith("title_next_"):
-        _, offset = query.data.split("_", 2)
-        offset = int(offset)
-        search = query.message.text.split("matching your search")[0].strip()
-        titles = await get_distinct_titles(search)
-        
-        btn = []
-        # Show next 10 titles
-        for i, title in enumerate(titles[offset+10:offset+20], start=offset+10):
-            btn.append([InlineKeyboardButton(text=f"{i+1}. {title}", callback_data=f"title#{title}")])
-        
-        nav_btns = []
-        if offset > 0:
-            nav_btns.append(InlineKeyboardButton(text="⏪ Previous", callback_data=f"title_prev_{offset}"))
-        
-        if offset + 20 < len(titles):
-            nav_btns.append(InlineKeyboardButton(text="Next ⏩", callback_data=f"title_next_{offset+10}"))
-        
-        if nav_btns:
-            btn.append(nav_btns)
-        
-        await query.message.edit_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
-    
-    elif query.data.startswith("title_prev_"):
-        _, offset = query.data.split("_", 2)
-        offset = int(offset)
-        new_offset = max(0, offset - 10)
-        
-        search = query.message.text.split("matching your search")[0].strip()
-        titles = await get_distinct_titles(search)
-        
-        btn = []
-        # Show previous 10 titles
-        for i, title in enumerate(titles[new_offset:new_offset+10], start=new_offset):
-            btn.append([InlineKeyboardButton(text=f"{i+1}. {title}", callback_data=f"title#{title}")])
-        
-        nav_btns = []
-        if new_offset > 0:
-            nav_btns.append(InlineKeyboardButton(text="⏪ Previous", callback_data=f"title_prev_{new_offset}"))
-        
-        if new_offset + 10 < len(titles):
-            nav_btns.append(InlineKeyboardButton(text="Next ⏩", callback_data=f"title_next_{new_offset}"))
-        
-        if nav_btns:
-            btn.append(nav_btns)
-        
-        await query.message.edit_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
     del_msg = f"\n\n<b>⚠️ ᴛʜɪs ᴍᴇssᴀɢᴇ ᴡɪʟʟ ʙᴇ ᴀᴜᴛᴏ ᴅᴇʟᴇᴛᴇ ᴀꜰᴛᴇʀ <code>{get_readable_time(DELETE_TIME)}</code> ᴛᴏ ᴀᴠᴏɪᴅ ᴄᴏᴘʏʀɪɢʜᴛ ɪssᴜᴇs</b>" if settings["auto_delete"] else ''
     if imdb and imdb.get('poster'):
         await s.delete()
@@ -1277,6 +1207,77 @@ async def title_callback(client, query):
                 await message.delete()
             except:
                 pass
+
+# New function to show title selection
+async def show_title_selection(client, message, titles, s):
+    btn = []
+    # Limit to 10 titles per page
+    for i, title in enumerate(titles[:10]):
+        btn.append([InlineKeyboardButton(text=f"{i+1}. {title}", callback_data=f"title#{title}")])
+
+    if len(titles) > 10:
+        btn.append([InlineKeyboardButton(text="Next ⏩", callback_data=f"title_next_0")])
+
+    await s.edit_text(
+        f"<b>Found {len(titles)} titles matching your search.</b>\n\n<b>Please select the exact title:</b>",
+        reply_markup=InlineKeyboardMarkup(btn)
+    )
+
+# Add new callback handler for title selection
+@Client.on_callback_query(filters.regex(r"^title"))
+async def title_callback(client, query):
+    if query.data.startswith("title#"):
+        _, title = query.data.split("#", 1)
+        s = await query.message.edit(f"<b><i>⚠️ Searching for `{title}`...</i></b>")
+        await auto_filter(client, query.message, s, title_search=title)
+
+    elif query.data.startswith("title_next_"):
+        _, offset = query.data.split("_", 2)
+        offset = int(offset)
+        search = query.message.text.split("matching your search")[0].strip()
+        titles = await get_distinct_titles(search)
+
+        btn = []
+        # Show next 10 titles
+        for i, title in enumerate(titles[offset+10:offset+20], start=offset+10):
+            btn.append([InlineKeyboardButton(text=f"{i+1}. {title}", callback_data=f"title#{title}")])
+
+        nav_btns = []
+        if offset > 0:
+            nav_btns.append(InlineKeyboardButton(text="⏪ Previous", callback_data=f"title_prev_{offset}"))
+
+        if offset + 20 < len(titles):
+            nav_btns.append(InlineKeyboardButton(text="Next ⏩", callback_data=f"title_next_{offset+10}"))
+
+        if nav_btns:
+            btn.append(nav_btns)
+
+        await query.message.edit_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
+
+    elif query.data.startswith("title_prev_"):
+        _, offset = query.data.split("_", 2)
+        offset = int(offset)
+        new_offset = max(0, offset - 10)
+
+        search = query.message.text.split("matching your search")[0].strip()
+        titles = await get_distinct_titles(search)
+
+        btn = []
+        # Show previous 10 titles
+        for i, title in enumerate(titles[new_offset:new_offset+10], start=new_offset):
+            btn.append([InlineKeyboardButton(text=f"{i+1}. {title}", callback_data=f"title#{title}")])
+
+        nav_btns = []
+        if new_offset > 0:
+            nav_btns.append(InlineKeyboardButton(text="⏪ Previous", callback_data=f"title_prev_{new_offset}"))
+
+        if new_offset + 10 < len(titles):
+            nav_btns.append(InlineKeyboardButton(text="Next ⏩", callback_data=f"title_next_{new_offset}"))
+
+        if nav_btns:
+            btn.append(nav_btns)
+
+        await query.message.edit_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
 
 async def advantage_spell_chok(message, s):
     search = message.text

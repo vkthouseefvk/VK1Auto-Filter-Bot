@@ -12,7 +12,7 @@ from hydrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Callback
 from hydrogram import Client, filters, enums
 from utils import is_premium, get_size, is_subscribed, is_check_admin, get_wish, get_shortlink, get_readable_time, get_poster, temp, get_settings, save_group_settings
 from database.users_chats_db import db
-from database.ia_filterdb import get_search_results,delete_files, db_count_documents, second_db_count_documents
+from database.ia_filterdb import get_search_results, delete_files, db_count_documents, second_db_count_documents, get_distinct_titles
 from plugins.commands import get_grp_stg
 
 BUTTONS = {}

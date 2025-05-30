@@ -26,7 +26,12 @@ async def pm_search(client, message):
         return await message.reply_text('PM search was disabled!')
     if await is_premium(message.from_user.id, client):
         s = await message.reply(f"<b><i>⚠️ `{message.text}` searching...</i></b>")
-        await auto_filter(client, message, s)
+        # Get distinct titles first
+        titles = await get_distinct_titles(message.text)
+        if titles:
+            await show_title_selection(client, message, titles, s)
+        else:
+            await auto_filter(client, message, s)
     else:
         files, n_offset, total = await get_search_results(message.text)
         btn = [[
@@ -34,12 +39,7 @@ async def pm_search(client, message):
         ],[
             InlineKeyboardButton('🤑 Buy Premium', url=f"https://t.me/{temp.U_NAME}?start=premium")
             ]]
-        reply_markup=InlineKeyboardMarkup(btn)
-        if int(total) != 0:
-            await message.reply_text(f'<b><i>🤗 ᴛᴏᴛᴀʟ <code>{total}</code> ʀᴇꜱᴜʟᴛꜱ ꜰᴏᴜɴᴅ ɪɴ ᴛʜɪꜱ ɢʀᴏᴜᴘ 👇</i></b>\n\nor buy premium subscription', reply_markup=reply_markup)
-
-            
-
+        await message.reply_text(f"I found {total} results for your query. Buy premium to access them.", reply_markup=InlineKeyboardMarkup(btn))
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def group_search(client, message):
@@ -61,36 +61,6 @@ async def group_search(client, message):
             
         if message.text.startswith("/"):
             return
-            
-        elif '@admin' in message.text.lower() or '@admins' in message.text.lower():
-            if await is_check_admin(client, message.chat.id, message.from_user.id):
-                return
-            admins = []
-            async for member in client.get_chat_members(chat_id=message.chat.id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
-                if not member.user.is_bot:
-                    admins.append(member.user.id)
-                    if member.status == enums.ChatMemberStatus.OWNER:
-                        if message.reply_to_message:
-                            try:
-                                sent_msg = await message.reply_to_message.forward(member.user.id)
-                                await sent_msg.reply_text(f"#Attention\n★ User: {message.from_user.mention}\n★ Group: {message.chat.title}\n\n★ <a href={message.reply_to_message.link}>Go to message</a>", disable_web_page_preview=True)
-                            except:
-                                pass
-                        else:
-                            try:
-                                sent_msg = await message.forward(member.user.id)
-                                await sent_msg.reply_text(f"#Attention\n★ User: {message.from_user.mention}\n★ Group: {message.chat.title}\n\n★ <a href={message.link}>Go to message</a>", disable_web_page_preview=True)
-                            except:
-                                pass
-            hidden_mentions = (f'[\u2064](tg://user?id={user_id})' for user_id in admins)
-            await message.reply_text('Report sent!' + ''.join(hidden_mentions))
-            return
-
-        elif re.findall(r'https?://\S+|www\.\S+|t\.me/\S+|@\w+', message.text):
-            if await is_check_admin(client, message.chat.id, message.from_user.id):
-                return
-            await message.delete()
-            return await message.reply('Links not allowed here!')
         
         elif '#request' in message.text.lower():
             if message.from_user.id in ADMINS:
@@ -100,7 +70,12 @@ async def group_search(client, message):
             return  
         else:
             s = await message.reply(f"<b><i>⚠️ `{message.text}` searching...</i></b>")
-            await auto_filter(client, message, s)
+            # Get distinct titles first
+            titles = await get_distinct_titles(message.text)
+            if titles:
+                await show_title_selection(client, message, titles, s)
+            else:
+                await auto_filter(client, message, s)
     else:
         k = await message.reply_text('Auto Filter Off! ❌')
         await asyncio.sleep(5)
@@ -1086,14 +1061,17 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
 
 
-async def auto_filter(client, msg, s, spoll=False):
+async def auto_filter(client, msg, s, spoll=False, title_search=None):
     if not spoll:
         message = msg
         settings = await get_settings(message.chat.id)
-        search = re.sub(r"\s+", " ", re.sub(r"[-:\"';!]", " ", message.text)).strip()
+        if title_search:
+            search = title_search
+        else:
+            search = re.sub(r"\s+", " ", re.sub(r"[-:\"';!]", " ", message.text)).strip()
         files, offset, total_results = await get_search_results(search)
         if not files:
-            if settings["spell_check"]:
+            if settings["spell_check"] and not title_search:
                 await advantage_spell_chok(message, s)
             else:
                 await s.edit(f'I cant find {search}')
@@ -1187,6 +1165,77 @@ async def auto_filter(client, msg, s, spoll=False):
     else:
         cap = f"<b>💭 ʜᴇʏ {message.from_user.mention},\n♻️ ʜᴇʀᴇ ɪ ꜰᴏᴜɴᴅ ꜰᴏʀ ʏᴏᴜʀ sᴇᴀʀᴄʜ {search}...</b>"
     CAP[key] = cap
+
+# New function to show title selection
+async def show_title_selection(client, message, titles, s):
+    btn = []
+    # Limit to 10 titles per page
+    for i, title in enumerate(titles[:10]):
+        btn.append([InlineKeyboardButton(text=f"{i+1}. {title}", callback_data=f"title#{title}")])
+    
+    if len(titles) > 10:
+        btn.append([InlineKeyboardButton(text="Next ⏩", callback_data=f"title_next_0")])
+    
+    await s.edit_text(
+        f"<b>Found {len(titles)} titles matching your search.</b>\n\n<b>Please select the exact title:</b>",
+        reply_markup=InlineKeyboardMarkup(btn)
+    )
+
+# Add new callback handler for title selection
+@Client.on_callback_query(filters.regex(r"^title"))
+async def title_callback(client, query):
+    if query.data.startswith("title#"):
+        _, title = query.data.split("#", 1)
+        s = await query.message.edit(f"<b><i>⚠️ Searching for `{title}`...</i></b>")
+        await auto_filter(client, query.message, s, title_search=title)
+    
+    elif query.data.startswith("title_next_"):
+        _, offset = query.data.split("_", 2)
+        offset = int(offset)
+        search = query.message.text.split("matching your search")[0].strip()
+        titles = await get_distinct_titles(search)
+        
+        btn = []
+        # Show next 10 titles
+        for i, title in enumerate(titles[offset+10:offset+20], start=offset+10):
+            btn.append([InlineKeyboardButton(text=f"{i+1}. {title}", callback_data=f"title#{title}")])
+        
+        nav_btns = []
+        if offset > 0:
+            nav_btns.append(InlineKeyboardButton(text="⏪ Previous", callback_data=f"title_prev_{offset}"))
+        
+        if offset + 20 < len(titles):
+            nav_btns.append(InlineKeyboardButton(text="Next ⏩", callback_data=f"title_next_{offset+10}"))
+        
+        if nav_btns:
+            btn.append(nav_btns)
+        
+        await query.message.edit_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
+    
+    elif query.data.startswith("title_prev_"):
+        _, offset = query.data.split("_", 2)
+        offset = int(offset)
+        new_offset = max(0, offset - 10)
+        
+        search = query.message.text.split("matching your search")[0].strip()
+        titles = await get_distinct_titles(search)
+        
+        btn = []
+        # Show previous 10 titles
+        for i, title in enumerate(titles[new_offset:new_offset+10], start=new_offset):
+            btn.append([InlineKeyboardButton(text=f"{i+1}. {title}", callback_data=f"title#{title}")])
+        
+        nav_btns = []
+        if new_offset > 0:
+            nav_btns.append(InlineKeyboardButton(text="⏪ Previous", callback_data=f"title_prev_{new_offset}"))
+        
+        if new_offset + 10 < len(titles):
+            nav_btns.append(InlineKeyboardButton(text="Next ⏩", callback_data=f"title_next_{new_offset}"))
+        
+        if nav_btns:
+            btn.append(nav_btns)
+        
+        await query.message.edit_reply_markup(reply_markup=InlineKeyboardMarkup(btn))
     del_msg = f"\n\n<b>⚠️ ᴛʜɪs ᴍᴇssᴀɢᴇ ᴡɪʟʟ ʙᴇ ᴀᴜᴛᴏ ᴅᴇʟᴇᴛᴇ ᴀꜰᴛᴇʀ <code>{get_readable_time(DELETE_TIME)}</code> ᴛᴏ ᴀᴠᴏɪᴅ ᴄᴏᴘʏʀɪɢʜᴛ ɪssᴜᴇs</b>" if settings["auto_delete"] else ''
     if imdb and imdb.get('poster'):
         await s.delete()

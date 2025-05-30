@@ -171,3 +171,39 @@ def unpack_new_file_id(new_file_id):
         )
     )
     return file_id
+
+async def get_distinct_titles(query):
+    """Get distinct titles matching the search query"""
+    query = str(query).strip()
+    if not query:
+        raw_pattern = '.'
+    elif ' ' not in query:
+        raw_pattern = r'(\b|[\.\+\-_])' + query + r'(\b|[\.\+\-_])'
+    else:
+        raw_pattern = query.replace(' ', r'.*[\s\.\+\-_]')
+    
+    try:
+        regex = re.compile(raw_pattern, flags=re.IGNORECASE)
+    except:
+        regex = query
+
+    # Get distinct titles from both databases
+    titles = set()
+    
+    # Search in primary database
+    cursor = collection.find({'file_name': regex})
+    for doc in cursor:
+        # Extract title (remove year and quality info)
+        title = re.sub(r'\(\d{4}\)|\d{4}|720p|1080p|2160p|HDCAM|HDRip|WebRip|WEBRip', '', doc['file_name'])
+        title = re.sub(r'\.', ' ', title).strip()
+        titles.add(title)
+    
+    # Search in secondary database if available
+    if SECOND_FILES_DATABASE_URL:
+        cursor2 = second_collection.find({'file_name': regex})
+        for doc in cursor2:
+            title = re.sub(r'\(\d{4}\)|\d{4}|720p|1080p|2160p|HDCAM|HDRip|WebRip|WEBRip', '', doc['file_name'])
+            title = re.sub(r'\.', ' ', title).strip()
+            titles.add(title)
+    
+    return sorted(list(titles))

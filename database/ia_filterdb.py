@@ -176,62 +176,46 @@ def clean_title(filename):
     """Clean filename to extract just the movie/show title"""
     title = filename
 
-    # Remove file extensions
+    # Remove file extensions first
     title = re.sub(r'\.(mkv|mp4|avi|mov|wmv|flv|webm|m4v|3gp|ts|m2ts)$', '', title, flags=re.IGNORECASE)
 
-    # Remove quality indicators
-    quality_patterns = [
-        r'\b(480p|720p|1080p|1440p|2160p|4k|8k)\b',
-        r'\b(HD|FHD|UHD|QHD)\b',
-        r'\b(CAM|TS|TC|SCR|DVDSCR|R5|DVDRip|BDRip|BRRip)\b',
-        r'\b(WEBRip|WEB-DL|WEB|HDRip|BluRay|Bluray|BDRemux)\b',
-        r'\b(HDCAM|HDTS|HDTC|PreDVDRip)\b'
-    ]
+    # Strategy: Extract title from beginning until we hit dates or season markers
+    # Most titles are clean alphanumeric at the start, noise comes after
 
-    # Remove codec and format info
-    codec_patterns = [
-        r'\b(x264|x265|H264|H265|HEVC|AVC|XviD|DivX)\b',
-        r'\b(AAC|AC3|DTS|MP3|FLAC|Atmos|TrueHD)\b',
-        r'\b(10bit|8bit|HDR|SDR|Dolby|Vision)\b'
-    ]
+    # Find where the title likely ends by looking for:
+    # 1. Year patterns (1900-2099)
+    # 2. Season/Episode patterns (S01, S1, Season 1, etc.)
+    # 3. Quality indicators that commonly appear after titles
 
-    # Remove source and release info
-    source_patterns = [
-        r'\b(AMZN|NF|HULU|DSNP|HBO|MAX|ATVP|PCOK|PMTP)\b',
-        r'\b(Netflix|Amazon|Disney|Hotstar|Prime)\b',
-        r'\b(REPACK|PROPER|REAL|RETAIL|EXTENDED|UNCUT|DC|IMAX)\b',
-        r'\b(MULTI|DUAL|DUBBED|SUBBED|SUB|DUB)\b'
-    ]
+    # Look for year patterns (movies): "Title.2023" or "Title (2023)" or "Title 2023"
+    year_match = re.search(r'[\.\s\-_\(]+(19|20)\d{2}[\.\s\-_\)]', title)
+    if year_match:
+        title = title[:year_match.start()]
 
-    # Remove language indicators
-    language_patterns = [
-        r'\b(Hindi|English|Tamil|Telugu|Malayalam|Kannada|Bengali|Punjabi|Gujarati|Marathi|Urdu)\b',
-        r'\b(HINDI|ENGLISH|TAMIL|TELUGU|MALAYALAM|KANNADA|BENGALI|PUNJABI|GUJARATI|MARATHI|URDU)\b',
-        r'\b(ORG|ORIGINAL|AUDIO)\b'
-    ]
+    # Look for season/episode patterns (series): "Title.S01E02" or "Title S1 E1"
+    season_match = re.search(r'[\.\s\-_]+(S\d{1,2}|Season\s*\d{1,2})', title, flags=re.IGNORECASE)
+    if season_match:
+        title = title[:season_match.start()]
 
-    # Remove years in parentheses and standalone
-    title = re.sub(r'\(\d{4}\)', '', title)
-    title = re.sub(r'\b(19|20)\d{2}\b', '', title)
+    # Look for common quality indicators that appear after titles
+    quality_match = re.search(r'[\.\s\-_]+(480p|720p|1080p|2160p|4k|HD|FHD|UHD|BluRay|WEB|HDCAM|DVDRip|BDRip|WEBRip)', title, flags=re.IGNORECASE)
+    if quality_match:
+        title = title[:quality_match.start()]
 
-    # Remove season/episode info
-    title = re.sub(r'\b(S\d{1,2}|Season\s*\d{1,2})\b', '', title, flags=re.IGNORECASE)
-    title = re.sub(r'\b(E\d{1,2}|Episode\s*\d{1,2})\b', '', title, flags=re.IGNORECASE)
-    title = re.sub(r'\b(S\d{1,2}E\d{1,2})\b', '', title, flags=re.IGNORECASE)
+    # Convert common separators to spaces
+    title = re.sub(r'[\.\-_]+', ' ', title)
 
-    # Apply all cleaning patterns
-    all_patterns = quality_patterns + codec_patterns + source_patterns + language_patterns
-    for pattern in all_patterns:
-        title = re.sub(pattern, '', title, flags=re.IGNORECASE)
+    # Clean up multiple spaces
+    title = re.sub(r'\s+', ' ', title)
 
-    # Remove common separators and clean up
-    title = re.sub(r'[\.\-_\[\]\(\)]+', ' ', title)
-    title = re.sub(r'\s+', ' ', title)  # Multiple spaces to single space
+    # Remove leading/trailing whitespace
     title = title.strip()
 
-    # Remove common prefixes/suffixes
-    title = re.sub(r'^(www\.|download|free|movie|film)\s*', '', title, flags=re.IGNORECASE)
-    title = re.sub(r'\s*(download|free|movie|film)$', '', title, flags=re.IGNORECASE)
+    # Remove common prefixes that might appear at the start
+    title = re.sub(r'^(www\.|download\s+|free\s+)', '', title, flags=re.IGNORECASE)
+
+    # Handle special cases where title might have colons (like "Avengers: Endgame")
+    # Keep colons as they're part of legitimate titles
 
     return title
 

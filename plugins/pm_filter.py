@@ -1061,7 +1061,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
 
 
-async def auto_filter(client, msg, s, spoll=False, title_search=None):
+async def auto_filter(client, msg, s, spoll=False, title_search=None, user_id=None):
     if not spoll:
         message = msg
         settings = await get_settings(message.chat.id)
@@ -1080,7 +1080,12 @@ async def auto_filter(client, msg, s, spoll=False, title_search=None):
         settings = await get_settings(msg.message.chat.id)
         message = msg.message.reply_to_message  # msg will be callback query
         search, files, offset, total_results = spoll
-    req = message.from_user.id if message and message.from_user else 0
+
+    # Use provided user_id if available, otherwise extract from message
+    if user_id is not None:
+        req = user_id
+    else:
+        req = message.from_user.id if message and message.from_user else 0
     key = f"{message.chat.id}-{message.id}"
     temp.FILES[key] = files
     BUTTONS[key] = search
@@ -1244,7 +1249,8 @@ async def title_callback(client, query):
     if query.data.startswith("title#"):
         _, title = query.data.split("#", 1)
         s = await query.message.edit(f"<b><i>⚠️ Searching for `{title}`...</i></b>")
-        await auto_filter(client, query.message, s, title_search=title)
+        # Pass the actual user ID who clicked the button, not the message sender
+        await auto_filter(client, query.message, s, title_search=title, user_id=query.from_user.id)
 
     elif query.data.startswith("title_next_"):
         _, offset = query.data.split("_", 2)

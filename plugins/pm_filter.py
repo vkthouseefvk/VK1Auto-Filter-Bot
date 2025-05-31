@@ -1248,7 +1248,17 @@ async def show_title_selection(client, message, titles, s):
 async def title_callback(client, query):
     if query.data.startswith("title#"):
         _, title = query.data.split("#", 1)
-        s = await query.message.edit(f"<b><i>⚠️ Searching for `{title}`...</i></b>")
+        try:
+            s = await query.message.edit(f"<b><i>🔍 Searching for '{title}'...</i></b>")
+        except Exception as e:
+            # If edit fails, try to send a new message
+            try:
+                await query.message.delete()
+                s = await query.message.reply_text(f"<b><i>🔍 Searching for '{title}'...</i></b>")
+            except:
+                # If all else fails, just send without deleting
+                s = await query.message.reply_text(f"<b><i>🔍 Searching for '{title}'...</i></b>")
+
         # Pass the actual user ID who clicked the button, not the message sender
         await auto_filter(client, query.message, s, title_search=title, user_id=query.from_user.id)
 

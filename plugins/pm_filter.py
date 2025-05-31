@@ -1218,10 +1218,25 @@ async def show_title_selection(client, message, titles, s):
     if len(titles) > 10:
         btn.append([InlineKeyboardButton(text="Next ⏩", callback_data=f"title_next_0")])
 
-    await s.edit_text(
-        f"<b>Found {len(titles)} titles matching your search.</b>\n\n<b>Please select the exact title:</b>",
-        reply_markup=InlineKeyboardMarkup(btn)
-    )
+    try:
+        await s.edit_text(
+            f"<b>🎬 Found {len(titles)} titles matching your search.</b>\n\n<b>📝 Please select the exact title:</b>",
+            reply_markup=InlineKeyboardMarkup(btn)
+        )
+    except Exception as e:
+        # If edit fails (e.g., MESSAGE_NOT_MODIFIED), try to send a new message
+        try:
+            await s.delete()
+            await message.reply_text(
+                f"<b>🎬 Found {len(titles)} titles matching your search.</b>\n\n<b>📝 Please select the exact title:</b>",
+                reply_markup=InlineKeyboardMarkup(btn)
+            )
+        except:
+            # If all else fails, just send without deleting
+            await message.reply_text(
+                f"<b>🎬 Found {len(titles)} titles matching your search.</b>\n\n<b>📝 Please select the exact title:</b>",
+                reply_markup=InlineKeyboardMarkup(btn)
+            )
 
 # Add new callback handler for title selection
 @Client.on_callback_query(filters.regex(r"^title"))

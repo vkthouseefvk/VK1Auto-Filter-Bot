@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-from info import ADMINS, DATABASE_NAME, DATA_DATABASE_URL, FILES_DATABASE_URL, SECOND_FILES_DATABASE_URL, IMDB_TEMPLATE, WELCOME_TEXT, LINK_MODE, TUTORIAL, SHORTLINK_URL, SHORTLINK_API, SHORTLINK, FILE_CAPTION, IMDB, WELCOME, SPELL_CHECK, PROTECT_CONTENT, AUTO_FILTER, AUTO_DELETE, IS_STREAM, VERIFY_EXPIRE
+from info import BOT_ID, ADMINS, DATABASE_NAME, DATA_DATABASE_URL, FILES_DATABASE_URL, SECOND_FILES_DATABASE_URL, IMDB_TEMPLATE, WELCOME_TEXT, LINK_MODE, TUTORIAL, SHORTLINK_URL, SHORTLINK_API, SHORTLINK, FILE_CAPTION, IMDB, WELCOME, SPELL_CHECK, PROTECT_CONTENT, AUTO_DELETE, IS_STREAM, VERIFY_EXPIRE
 import time
 from datetime import datetime
 
@@ -15,7 +15,6 @@ if SECOND_FILES_DATABASE_URL:
 
 class Database:
     default_setgs = {
-        'auto_filter': AUTO_FILTER,
         'file_secure': PROTECT_CONTENT,
         'imdb': IMDB,
         'spell_check': SPELL_CHECK,
@@ -238,12 +237,12 @@ class Database:
             return []
         
     def update_bot_sttgs(self, var, val):
-        if not self.stg.find_one({'id': 'settings'}):
-            self.stg.insert_one({'id': 'settings', var: val})
-        self.stg.update_one({'id': 'settings'}, {'$set': {var: val}})
+        if not self.stg.find_one({'id': BOT_ID}):
+            self.stg.insert_one({'id': BOT_ID, var: val})
+        self.stg.update_one({'id': BOT_ID}, {'$set': {var: val}})
 
     def get_bot_sttgs(self):
-        return self.stg.find_one({'id': 'settings'})
+        return self.stg.find_one({'id': BOT_ID})
 
 
 db = Database()

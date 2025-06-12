@@ -55,8 +55,14 @@ async def start(client, message):
         buttons = [[
             InlineKeyboardButton('ᴜᴘᴅᴀᴛᴇs', url=UPDATES_LINK)
         ],[
-            InlineKeyboardButton('ʜᴇʟᴘ', callback_data='help'),
-            InlineKeyboardButton('ᴀʙᴏᴜᴛ', callback_data='about')
+            InlineKeyboardButton('ℹ️ ᴜᴘᴅᴀᴛᴇs', url=UPDATES_LINK),
+            InlineKeyboardButton('🧑‍💻 sᴜᴘᴘᴏʀᴛ', url=SUPPORT_LINK)
+        ],[
+            InlineKeyboardButton('👨‍🚒 ʜᴇʟᴘ', callback_data='help'),
+            InlineKeyboardButton('🔎 sᴇᴀʀᴄʜ ɪɴʟɪɴᴇ', switch_inline_query_current_chat=''),
+            InlineKeyboardButton('📚 ᴀʙᴏᴜᴛ', callback_data='about')
+        ],[
+            InlineKeyboardButton('🤑 Buy Premium', url=f"https://t.me/{temp.U_NAME}?start=premium")
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_photo(
@@ -305,8 +311,6 @@ async def get_grp_stg(group_id):
     ],[
         InlineKeyboardButton('Edit tutorial link', callback_data=f'tutorial_setgs#{group_id}')
     ],[
-        InlineKeyboardButton(f'Auto Filter {"✅" if settings["auto_filter"] else "❌"}', callback_data=f'bool_setgs#auto_filter#{settings["auto_filter"]}#{group_id}')
-    ],[
         InlineKeyboardButton(f'IMDb Poster {"✅" if settings["imdb"] else "❌"}', callback_data=f'bool_setgs#imdb#{settings["imdb"]}#{group_id}')
     ],[
         InlineKeyboardButton(f'Spelling Check {"✅" if settings["spell_check"] else "❌"}', callback_data=f'bool_setgs#spell_check#{settings["spell_check"]}#{group_id}')
@@ -551,3 +555,27 @@ async def set_req_fsub(bot, message):
     db.update_bot_sttgs('REQUEST_FORCE_SUB_CHANNELS', id)
     await message.reply(f'added request force subscribe channel: {chat.title}')
 
+
+@Client.on_message(filters.command('off_auto_filter') & filters.user(ADMINS))
+async def off_auto_filter(bot, message):
+    db.update_bot_sttgs('AUTO_FILTER', False)
+    await message.reply('Successfully turned off auto filter for all groups')
+
+
+@Client.on_message(filters.command('on_auto_filter') & filters.user(ADMINS))
+async def on_auto_filter(bot, message):
+    db.update_bot_sttgs('AUTO_FILTER', True)
+    await message.reply('Successfully turned on auto filter for all groups')
+
+
+
+@Client.on_message(filters.command('off_pm_search') & filters.user(ADMINS))
+async def off_pm_search(bot, message):
+    db.update_bot_sttgs('PM_SEARCH', False)
+    await message.reply('Successfully turned off pm search for all users')
+
+
+@Client.on_message(filters.command('on_pm_search') & filters.user(ADMINS))
+async def on_pm_search(bot, message):
+    db.update_bot_sttgs('PM_SEARCH', True)
+    await message.reply('Successfully turned on pm search for all users')

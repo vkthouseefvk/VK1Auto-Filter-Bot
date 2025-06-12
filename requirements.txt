@@ -10,3 +10,4 @@ uvloop
 requests
 qrcode
 Pillow
+pytz

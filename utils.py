@@ -1,5 +1,5 @@
 from hydrogram.errors import UserNotParticipant, FloodWait
-from info import LONG_IMDB_DESCRIPTION, ADMINS, IS_PREMIUM
+from info import LONG_IMDB_DESCRIPTION, ADMINS, IS_PREMIUM, TIME_ZONE
 from imdb import Cinemagoer
 import asyncio
 from hydrogram.types import InlineKeyboardButton
@@ -8,7 +8,7 @@ import re
 from datetime import datetime
 from database.users_chats_db import db
 from shortzy import Shortzy
-import requests
+import requests, pytz
 
 imdb = Cinemagoer() 
 
@@ -285,7 +285,7 @@ def get_readable_time(seconds):
     return result
 
 def get_wish():
-    time = datetime.now()
+    time = datetime.now(pytz.timezone(TIME_ZONE))
     now = time.strftime("%H")
     if now < "12":
         status = "ɢᴏᴏᴅ ᴍᴏʀɴɪɴɢ 🌞"

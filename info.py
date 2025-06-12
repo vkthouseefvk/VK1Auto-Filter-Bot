@@ -35,6 +35,7 @@ BOT_TOKEN = environ.get('BOT_TOKEN', '')
 if len(BOT_TOKEN) == 0:
     logger.error('BOT_TOKEN is missing, exiting now')
     exit()
+BOT_ID = BOT_TOKEN.split(":")[0]
 PORT = int(environ.get('PORT', '80'))
 
 # Upload your images to "postimages.org" and get direct link
@@ -90,6 +91,7 @@ TUTORIAL = environ.get("TUTORIAL", "https://t.me/HA_Bots")
 VERIFY_TUTORIAL = environ.get("VERIFY_TUTORIAL", "https://t.me/HA_Bots")
 
 # Bot settings
+TIME_ZONE = environ.get('TIME_ZONE', 'Asia/Colombo') # Replace your time zone
 DELETE_TIME = int(environ.get('DELETE_TIME', 3600)) # Add time in seconds
 CACHE_TIME = int(environ.get('CACHE_TIME', 300))
 MAX_BTN = int(environ.get('MAX_BTN', 8))
@@ -116,7 +118,6 @@ AUTO_FILTER = is_enabled('AUTO_FILTER', True)
 IMDB = is_enabled('IMDB', True)
 SPELL_CHECK = is_enabled("SPELL_CHECK", True)
 SHORTLINK = is_enabled('SHORTLINK', False)
-PM_SEARCH = is_enabled('PM_SEARCH', True)
 
 # for stream
 IS_STREAM = is_enabled('IS_STREAM', True)
